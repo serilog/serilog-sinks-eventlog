@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Moq;
 using NUnit.Framework;
-using Serilog.Events;
-using Serilog.Formatting;
 
 namespace Serilog.Sinks.EventLog.Tests
 {
