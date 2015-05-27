@@ -31,34 +31,41 @@ namespace Serilog.Sinks.EventLog
 		readonly ITextFormatter _textFormatter;
 		readonly string _source;
 
-		/// <summary>
-		/// Construct a sink posting to the Windows event log, creating the specified <paramref name="source"/> if it does not exist.
-		/// </summary>
-		/// <param name="source">The source name by which the application is registered on the local computer. </param>
-		/// <param name="logName">The name of the log the source's entries are written to. Possible values include Application, System, or a custom event log.</param>
-		/// <param name="textFormatter">Supplies culture-specific formatting information, or null.</param>
-		/// <param name="machineName">The name of the machine hosting the event log written to.</param>
-        /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
-		public EventLogSink(string source, string logName, ITextFormatter textFormatter, string machineName, bool manageEventSource)
-		{
-			if (source == null) throw new ArgumentNullException("source");
-		    if (textFormatter == null) throw new ArgumentNullException("textFormatter");
+	    /// <summary>
+	    /// Construct a sink posting to the Windows event log, creating the specified <paramref name="source"/> if it does not exist.
+	    /// </summary>
+	    /// <param name="source">The source name by which the application is registered on the local computer. </param>
+	    /// <param name="logName">The name of the log the source's entries are written to. Possible values include Application, System, or a custom event log.</param>
+	    /// <param name="textFormatter">Supplies culture-specific formatting information, or null.</param>
+	    /// <param name="machineName">The name of the machine hosting the event log written to.</param>
+	    /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
+	    public EventLogSink(string source, string logName, ITextFormatter textFormatter, string machineName, bool manageEventSource)
+	    {
+	        if (source == null) throw new ArgumentNullException("source");
+	        if (textFormatter == null) throw new ArgumentNullException("textFormatter");
 
-		    _textFormatter = textFormatter;
-			_source = source;
 
-			var sourceData = new EventSourceCreationData(source, logName) { MachineName = machineName };
+	        //The source is limitted in length and allowed chars
+	        //see: https://msdn.microsoft.com/en-us/library/e29k5ebc%28v=vs.110%29.aspx
+	        source = source.Substring(0, Math.Min(source.Length, 212));
+	        source = source.Replace("<", "_");
+	        source = source.Replace(">", "_");
 
-            if (manageEventSource)
-            {
-                if (!System.Diagnostics.EventLog.SourceExists(source, machineName))
-                {
-                    System.Diagnostics.EventLog.CreateEventSource(sourceData);
-                }
-            }
-		}
+	        _textFormatter = textFormatter;
+	        _source = source;
 
-		/// <summary>
+	        var sourceData = new EventSourceCreationData(source, logName) {MachineName = machineName};
+
+	        if (manageEventSource)
+	        {
+	            if (!System.Diagnostics.EventLog.SourceExists(source, machineName))
+	            {
+	                System.Diagnostics.EventLog.CreateEventSource(sourceData);
+	            }
+	        }
+	    }
+
+	    /// <summary>
 		/// Emit the provided log event to the sink.
 		/// </summary>
 		/// <param name="logEvent">The log event to write.</param>
@@ -95,10 +102,20 @@ namespace Serilog.Sinks.EventLog
 					break;
 			}
 
-			var payload = new StringWriter();
-			_textFormatter.Format(logEvent, payload);
+			var payloadWriter = new StringWriter();
+			_textFormatter.Format(logEvent, payloadWriter);
 
-			System.Diagnostics.EventLog.WriteEntry(_source, payload.ToString(), type, (int)logEvent.Level);
+
+            //The payload is limitted in length and allowed chars
+            //see: https://msdn.microsoft.com/en-us/library/e29k5ebc%28v=vs.110%29.aspx
+            var payload = payloadWriter.ToString();
+	        if (payload.Length > 31839)
+	        {
+                //trim
+	            payload = payload.Substring(0, 31839);
+	        }
+
+            System.Diagnostics.EventLog.WriteEntry(_source, payload, type, (int)logEvent.Level);
 		}
 	}
 }

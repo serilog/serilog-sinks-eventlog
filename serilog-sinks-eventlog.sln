@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.EventLog", "src\Serilog.Sinks.EventLog\Serilog.Sinks.EventLog.csproj", "{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.EventLog.Tests", "src\Serilog.Sinks.EventLog.Tests\Serilog.Sinks.EventLog.Tests.csproj", "{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
