@@ -3,7 +3,7 @@
   <metadata>
     <id>Serilog.Sinks.EventLog</id>
     <version>$version$</version>
-    <authors>Jeremy Clarke</authors>
+    <authors>Jeremy Clarke, Fabian Wetzel</authors>
     <description>Serilog event sink that writes to the Windows event log.</description>
     <language>en-US</language>
     <projectUrl>http://serilog.net</projectUrl>
