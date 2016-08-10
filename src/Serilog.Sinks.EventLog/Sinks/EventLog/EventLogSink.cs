@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Microsoft.Win32;
 using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
@@ -43,7 +45,8 @@ namespace Serilog.Sinks.EventLog
 	    /// <param name="textFormatter">Supplies culture-specific formatting information, or null.</param>
 	    /// <param name="machineName">The name of the machine hosting the event log written to.</param>
 	    /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
-	    public EventLogSink(string source, string logName, ITextFormatter textFormatter, string machineName, bool manageEventSource)
+	    public EventLogSink(string source, string logName, ITextFormatter textFormatter, string machineName,
+	        bool manageEventSource)
 	    {
 	        if (source == null) throw new ArgumentNullException("source");
 	        if (textFormatter == null) throw new ArgumentNullException("textFormatter");
@@ -68,16 +71,54 @@ namespace Serilog.Sinks.EventLog
 
 	        if (manageEventSource)
 	        {
-	            if (!System.Diagnostics.EventLog.SourceExists(source, machineName))
-	            {
-	                System.Diagnostics.EventLog.CreateEventSource(sourceData);
+	            var sourceExistsInAnyLog = true;
+	            Action logSourceMoved = () => { };
+
+                sourceExistsInAnyLog = System.Diagnostics.EventLog.SourceExists(source, machineName);
+
+                if(sourceExistsInAnyLog)
+                {
+	                var existingLogWithSourceName = System.Diagnostics.EventLog.LogNameFromSourceName(source, machineName);
+
+	                if (!string.IsNullOrWhiteSpace(existingLogWithSourceName))
+	                {
+	                    var existingLogWithSource = new System.Diagnostics.EventLog(existingLogWithSourceName);
+                        //remove it from previous log so we can associated it with the current logName
+	                    System.Diagnostics.EventLog.DeleteEventSource(source, machineName);
+
+                        //stash a reference to this guy so we can add a log entry noting the logs your looking for are in the
+                        //log previously associated with "source"
+                        //we don't log here in case creating the event source fails (if the create failed, an entry here would be misleading)
+                        logSourceMoved = () =>
+                        {
+                            var metaSource = $"serilog-{_logName}";
+                            if (!System.Diagnostics.EventLog.SourceExists(metaSource, machineName))
+                                System.Diagnostics.EventLog.CreateEventSource(new EventSourceCreationData(metaSource, _logName)
+                                {
+                                    MachineName = machineName
+                                });
+
+                            _log.Source = metaSource;
+                            _log.WriteEntry(
+                                message: $"Event source {source} was previously registered in log {existingLogWithSource.Log}. " +
+                                    $"The source has been registered with this log, {logName}, however a computer restart is required " +
+                                    $"before event logs will appear in {logName} with source {source}. Until then, messages will be logged to {existingLogWithSource.Log}.",
+                                type: EventLogEntryType.Warning,
+                                eventID: (int)LogEventLevel.Warning);
+                        };
+                    }
 	            }
+
+	            if (!sourceExistsInAnyLog)
+	                System.Diagnostics.EventLog.CreateEventSource(sourceData);
+
+	            logSourceMoved();
 	        }
 
             _log.Source = source;
 	    }
-
-        /// <summary>
+     
+	    /// <summary>
 	    /// Emit the provided log event to the sink.
 	    /// </summary>
 	    /// <param name="logEvent">The log event to write.</param>
