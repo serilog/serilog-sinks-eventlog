@@ -8,11 +8,13 @@ namespace Serilog.Sinks.EventLog.Tests
     [TestFixture]
     public class EventLogSinkTests
     {
+        private readonly string EVENT_LOG_SOURCE = "EventLogSinkTests";
+
         [Test]
         public void EmittingNormalEventsWorks()
         {
             var log = new LoggerConfiguration()
-                .WriteTo.EventLog("EventLogSinkTests")
+                .WriteTo.EventLog(EVENT_LOG_SOURCE)
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
@@ -42,7 +44,7 @@ namespace Serilog.Sinks.EventLog.Tests
             for (var i = 199; i < 270; i+=10)
             {
                 var log = new LoggerConfiguration()
-                    .WriteTo.EventLog("EventLogSinkTests" + new string('x', i - "EventLogSinkTests".Length))
+                    .WriteTo.EventLog(EVENT_LOG_SOURCE + new string('x', i - EVENT_LOG_SOURCE.Length))
                     .CreateLogger();
 
                 var guid = Guid.NewGuid().ToString("D");
@@ -66,7 +68,7 @@ namespace Serilog.Sinks.EventLog.Tests
             foreach (var charcount in charcounts)
             {
                 var log = new LoggerConfiguration()
-                    .WriteTo.EventLog("EventLogSinkTests")
+                    .WriteTo.EventLog(EVENT_LOG_SOURCE)
                     .CreateLogger();
 
                 var guid = Guid.NewGuid().ToString("D");
@@ -83,7 +85,7 @@ namespace Serilog.Sinks.EventLog.Tests
         public void UsingSpecialCharsWorks()
         {
             var log = new LoggerConfiguration()
-                .WriteTo.EventLog("EventLogSinkTests")
+                .WriteTo.EventLog(EVENT_LOG_SOURCE)
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
@@ -99,7 +101,7 @@ namespace Serilog.Sinks.EventLog.Tests
             var log = new LoggerConfiguration()
                 .WriteTo.EventLog(
                     //can't use same source in different log
-                    source: $"EventLogSinkTests-{customLogName}", 
+                    source: $"{EVENT_LOG_SOURCE}-{customLogName}", 
                     logName: customLogName)
                 .CreateLogger();
 
