@@ -15,6 +15,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
@@ -30,6 +31,9 @@ namespace Serilog.Sinks.EventLog
 	{
 		readonly ITextFormatter _textFormatter;
 		readonly string _source;
+	    readonly string _logName;
+	    const string APPLICATION_LOG = "Application";
+        System.Diagnostics.EventLog _log;
 
 	    /// <summary>
 	    /// Construct a sink posting to the Windows event log, creating the specified <paramref name="source"/> if it does not exist.
@@ -53,6 +57,12 @@ namespace Serilog.Sinks.EventLog
 
 	        _textFormatter = textFormatter;
 	        _source = source;
+	        _logName = logName;
+
+	        if (string.IsNullOrWhiteSpace(_logName))
+	            _logName = APPLICATION_LOG;
+
+	        _log = new System.Diagnostics.EventLog(_logName);
 
 	        var sourceData = new EventSourceCreationData(source, logName) {MachineName = machineName};
 
@@ -63,6 +73,8 @@ namespace Serilog.Sinks.EventLog
 	                System.Diagnostics.EventLog.CreateEventSource(sourceData);
 	            }
 	        }
+
+            _log.Source = source;
 	    }
 
 	    /// <summary>
@@ -115,7 +127,10 @@ namespace Serilog.Sinks.EventLog
 	            payload = payload.Substring(0, 31839);
 	        }
 
-            System.Diagnostics.EventLog.WriteEntry(_source, payload, type, (int)logEvent.Level);
-		}
+	        _log.WriteEntry(
+	            message: payload,
+	            type: type,
+	            eventID: (int) logEvent.Level);
+	    }
 	}
 }

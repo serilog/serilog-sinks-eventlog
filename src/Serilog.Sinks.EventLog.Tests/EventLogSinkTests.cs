@@ -92,14 +92,41 @@ namespace Serilog.Sinks.EventLog.Tests
             Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid), "The message was not found in the eventlog.");
         }
 
-        private bool EventLogMessageWithSpecificBodyExists(string partOfBody)
+        [Test]
+        public void UsingCustomEventLogWorks()
         {
-            return ApplicationLog.Entries.Cast<EventLogEntry>().Any(entry => entry.Message.Contains(partOfBody));
+            var customLogName = "serilog-eventlog-sink";
+            var log = new LoggerConfiguration()
+                .WriteTo.EventLog(
+                    //can't use same source in different log
+                    source: $"EventLogSinkTests-{customLogName}", 
+                    logName: customLogName)
+                .CreateLogger();
+
+            var guid = Guid.NewGuid().ToString("D");
+            log.Information("This is a normal mesage with a {Guid} in log {customLogName}", guid, customLogName);
+
+            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid, customLogName),
+                "The message was not found in the eventlog.");
+        }
+
+        private bool EventLogMessageWithSpecificBodyExists(string partOfBody, string logName = "")
+        {
+            var log = string.IsNullOrWhiteSpace(logName) ? ApplicationLog : GetLog(logName);
+            return log.Entries.Cast<EventLogEntry>().Any(entry => entry.Message.Contains(partOfBody));
         }
 
         private static System.Diagnostics.EventLog ApplicationLog
         {
-            get { return System.Diagnostics.EventLog.GetEventLogs().First(log => log.Log == "Application"); }
+            get { return GetLog("Application"); }
+        }
+
+        private static System.Diagnostics.EventLog GetLog(string logName)
+        {
+            var evemtlog = System.Diagnostics.EventLog.GetEventLogs().FirstOrDefault(log => log.Log == logName);
+            if (evemtlog == null)
+                throw new Exception($"Cannot find log \"{logName}\"");
+            return evemtlog;
         }
     }
 }
