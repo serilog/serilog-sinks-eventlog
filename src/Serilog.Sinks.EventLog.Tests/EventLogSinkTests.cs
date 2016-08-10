@@ -8,6 +8,7 @@ namespace Serilog.Sinks.EventLog.Tests
     [TestFixture]
     public class EventLogSinkTests
     {
+        private const string CUSTOM_LOG_NAME = "serilog-eventlog-sink";
         private readonly string EVENT_LOG_SOURCE = "EventLogSinkTests";
 
         [Test]
@@ -97,40 +98,38 @@ namespace Serilog.Sinks.EventLog.Tests
         [Test]
         public void UsingCustomEventLogWorks()
         {
-            var customLogName = "serilog-eventlog-sink";
             var log = new LoggerConfiguration()
                 .WriteTo.EventLog(
                     //can't use same source in different log
-                    source: $"{EVENT_LOG_SOURCE}-{customLogName}", 
-                    logName: customLogName)
+                    source: $"{EVENT_LOG_SOURCE}-{CUSTOM_LOG_NAME}", 
+                    logName: CUSTOM_LOG_NAME)
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
-            log.Information("This is a normal mesage with a {Guid} in log {customLogName}", guid, customLogName);
+            log.Information("This is a normal mesage with a {Guid} in log {CUSTOM_LOG_NAME}", guid, CUSTOM_LOG_NAME);
 
-            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid, customLogName),
+            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid, CUSTOM_LOG_NAME),
                 "The message was not found in the eventlog.");
         }
 
         [Test]
         public void UsingExistingSourceInCustomEventLogLogsRestartWarningAndLogsToApplicationLog()
         {
-            var customLogName = "serilog-eventlog-sink";
             var source = Guid.NewGuid().ToString("D");
             //create our source in the app log first
             System.Diagnostics.EventLog.CreateEventSource(new EventSourceCreationData(source, "Application"));
 
             //then try to use it in our custom log
             var log = new LoggerConfiguration()
-                .WriteTo.EventLog(source: source, logName: customLogName)
+                .WriteTo.EventLog(source: source, logName: CUSTOM_LOG_NAME)
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
-            log.Information("This is a normal mesage with a {Guid} in log {customLogName}", guid, customLogName);
+            log.Information("This is a normal mesage with a {Guid} in log {customLogName}", guid, CUSTOM_LOG_NAME);
 
             Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid, "Application"),
                 "The message was not found in the eventlog.");
-            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(source, customLogName),
+            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(source, CUSTOM_LOG_NAME),
                 "The message was not found in the eventlog.");
 
             System.Diagnostics.EventLog.DeleteEventSource(source);

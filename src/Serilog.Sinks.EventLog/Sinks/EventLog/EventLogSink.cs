@@ -48,9 +48,8 @@ namespace Serilog.Sinks.EventLog
 	    public EventLogSink(string source, string logName, ITextFormatter textFormatter, string machineName,
 	        bool manageEventSource)
 	    {
-	        if (source == null) throw new ArgumentNullException("source");
-	        if (textFormatter == null) throw new ArgumentNullException("textFormatter");
-
+	        if (source == null) throw new ArgumentNullException(nameof(source));
+	        if (textFormatter == null) throw new ArgumentNullException(nameof(textFormatter));
 
 	        //The source is limitted in length and allowed chars
 	        //see: https://msdn.microsoft.com/en-us/library/e29k5ebc%28v=vs.110%29.aspx
