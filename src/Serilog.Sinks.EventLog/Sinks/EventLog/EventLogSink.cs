@@ -77,53 +77,52 @@ namespace Serilog.Sinks.EventLog
             _log.Source = source;
 	    }
 
-	    /// <summary>
-		/// Emit the provided log event to the sink.
-		/// </summary>
-		/// <param name="logEvent">The log event to write.</param>
-		/// <remarks>
-		/// <see cref="LogEventLevel.Debug" />, <see cref="LogEventLevel.Information" /> and <see cref="LogEventLevel.Verbose" /> are registered as <see cref="EventLogEntryType.Information" />.
-		/// <see cref="LogEventLevel.Error" />, <see cref="LogEventLevel.Fatal" /> are registered as <see cref="EventLogEntryType.Error" />.
-		/// <see cref="LogEventLevel.Warning" /> are registered as <see cref="EventLogEntryType.Warning" />.
-		/// The Event ID in the Windows log will be set to the integer value of the <paramref name="logEvent"/>'s <see cref="LogEvent.Level"/> property, so that the log can be filtered with more granularity.</remarks>
-		public void Emit(LogEvent logEvent)
-		{
-			if (logEvent == null) throw new ArgumentNullException("logEvent");
+        /// <summary>
+	    /// Emit the provided log event to the sink.
+	    /// </summary>
+	    /// <param name="logEvent">The log event to write.</param>
+	    /// <remarks>
+	    /// <see cref="LogEventLevel.Debug" />, <see cref="LogEventLevel.Information" /> and <see cref="LogEventLevel.Verbose" /> are registered as <see cref="EventLogEntryType.Information" />.
+	    /// <see cref="LogEventLevel.Error" />, <see cref="LogEventLevel.Fatal" /> are registered as <see cref="EventLogEntryType.Error" />.
+	    /// <see cref="LogEventLevel.Warning" /> are registered as <see cref="EventLogEntryType.Warning" />.
+	    /// The Event ID in the Windows log will be set to the integer value of the <paramref name="logEvent"/>'s <see cref="LogEvent.Level"/> property, so that the log can be filtered with more granularity.</remarks>
+	    public void Emit(LogEvent logEvent)
+	    {
+	        if (logEvent == null) throw new ArgumentNullException("logEvent");
 
-			EventLogEntryType type;
-			switch (logEvent.Level)
-			{
-				case LogEventLevel.Debug:
-				case LogEventLevel.Information:
-				case LogEventLevel.Verbose:
-					type = EventLogEntryType.Information;
-					break;
+	        EventLogEntryType type;
+	        switch (logEvent.Level)
+	        {
+	            case LogEventLevel.Debug:
+	            case LogEventLevel.Information:
+	            case LogEventLevel.Verbose:
+	                type = EventLogEntryType.Information;
+	                break;
 
-				case LogEventLevel.Error:
-				case LogEventLevel.Fatal:
-					type = EventLogEntryType.Error;
-					break;
+	            case LogEventLevel.Error:
+	            case LogEventLevel.Fatal:
+	                type = EventLogEntryType.Error;
+	                break;
 
-				case LogEventLevel.Warning:
-					type = EventLogEntryType.Warning;
-					break;
+	            case LogEventLevel.Warning:
+	                type = EventLogEntryType.Warning;
+	                break;
 
-				default:
-					SelfLog.WriteLine("Unexpected logging level, writing to EventLog as Information");
-					type = EventLogEntryType.Information;
-					break;
-			}
+	            default:
+	                SelfLog.WriteLine("Unexpected logging level, writing to EventLog as Information");
+	                type = EventLogEntryType.Information;
+	                break;
+	        }
 
-			var payloadWriter = new StringWriter();
-			_textFormatter.Format(logEvent, payloadWriter);
+	        var payloadWriter = new StringWriter();
+	        _textFormatter.Format(logEvent, payloadWriter);
 
-
-            //The payload is limitted in length and allowed chars
-            //see: https://msdn.microsoft.com/en-us/library/e29k5ebc%28v=vs.110%29.aspx
-            var payload = payloadWriter.ToString();
+	        //The payload is limitted in length and allowed chars
+	        //see: https://msdn.microsoft.com/en-us/library/e29k5ebc%28v=vs.110%29.aspx
+	        var payload = payloadWriter.ToString();
 	        if (payload.Length > 31839)
 	        {
-                //trim
+	            //trim
 	            payload = payload.Substring(0, 31839);
 	        }
 
