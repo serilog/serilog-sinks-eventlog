@@ -45,6 +45,7 @@
     <Compile Include="..\..\assets\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Sinks\EventLog\EventIdHash.cs" />
     <Compile Include="Sinks\EventLog\EventLogSink.cs" />
   </ItemGroup>
   <ItemGroup>
