@@ -22,7 +22,6 @@ using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Formatting;
-using Serilog.Formatting.Compact;
 
 namespace Serilog.Sinks.EventLog
 {
