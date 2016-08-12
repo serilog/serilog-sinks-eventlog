@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.EventLog", "src\Serilog.Sinks.EventLog\Serilog.Sinks.EventLog.csproj", "{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.EventLog.Tests", "src\Serilog.Sinks.EventLog.Tests\Serilog.Sinks.EventLog.Tests.csproj", "{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1AE6C6F3-6380-4F04-8FE5-3BBACE95DA83}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
