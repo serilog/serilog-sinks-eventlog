@@ -22,6 +22,7 @@ using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Formatting;
+using Serilog.Formatting.Compact;
 
 namespace Serilog.Sinks.EventLog
 {
@@ -99,9 +100,9 @@ namespace Serilog.Sinks.EventLog
 
                             _log.Source = metaSource;
                             _log.WriteEntry(
-                                message: $"Event source {source} was previously registered in log {existingLogWithSource.Log}. " +
+                                message: $"Event source {source} was previously registered in log {existingLogWithSourceName}. " +
                                     $"The source has been registered with this log, {logName}, however a computer restart is required " +
-                                    $"before event logs will appear in {logName} with source {source}. Until then, messages will be logged to {existingLogWithSource.Log}.",
+                                    $"before event logs will appear in {logName} with source {source}. Until then, messages will be logged to {existingLogWithSourceName}.",
                                 type: EventLogEntryType.Warning,
                                 eventID: (int)LogEventLevel.Warning);
                         };
@@ -169,7 +170,9 @@ namespace Serilog.Sinks.EventLog
 	        _log.WriteEntry(
 	            message: payload,
 	            type: type,
-	            eventID: (int) logEvent.Level);
+                //even though the api is type int, eventID must be between 0 and 65535
+                //https://msdn.microsoft.com/en-us/library/d3159s0c(v=vs.110).aspx
+                eventID: (ushort)(EventIdHash.Compute(logEvent.MessageTemplate.Text)));
 	    }
 	}
 }
