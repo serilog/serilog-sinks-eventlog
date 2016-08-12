@@ -128,17 +128,18 @@ namespace Serilog.Sinks.EventLog.Tests
             var guid = Guid.NewGuid().ToString("D");
             log.Information("This is a normal mesage with a {Guid} in log {customLogName}", guid, CUSTOM_LOG_NAME);
 
-            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid, "Application"),
-                "The message was not found in the eventlog.");
+            if (!EventLogMessageWithSpecificBodyExists(guid, "Application"))
+                Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid, CUSTOM_LOG_NAME), "The message was not found in either the original or new eventlog.");
+
+
             Assert.IsTrue(EventLogMessageWithSpecificBodyExists(source, CUSTOM_LOG_NAME),
-                "The message was not found in the eventlog.");
+                "The message was not found in target eventlog.");
 
             System.Diagnostics.EventLog.DeleteEventSource(source);
         }
 
         private bool EventLogMessageWithSpecificBodyExists(string partOfBody, string logName = "")
         {
-            Thread.Sleep(100);
             var log = string.IsNullOrWhiteSpace(logName) ? ApplicationLog : GetLog(logName);
             return log.Entries.Cast<EventLogEntry>().Any(entry => entry.Message.Contains(partOfBody));
         }

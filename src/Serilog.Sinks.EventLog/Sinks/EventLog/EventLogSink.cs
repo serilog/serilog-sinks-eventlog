@@ -13,16 +13,12 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using Microsoft.Win32;
 using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Formatting;
-using Serilog.Formatting.Compact;
 
 namespace Serilog.Sinks.EventLog
 {
@@ -33,10 +29,9 @@ namespace Serilog.Sinks.EventLog
 	public class EventLogSink : ILogEventSink
 	{
 		readonly ITextFormatter _textFormatter;
-		readonly string _source;
 	    readonly string _logName;
 	    const string APPLICATION_LOG = "Application";
-        System.Diagnostics.EventLog _log;
+	    readonly System.Diagnostics.EventLog _log;
 
 	    /// <summary>
 	    /// Construct a sink posting to the Windows event log, creating the specified <paramref name="source"/> if it does not exist.
@@ -59,7 +54,6 @@ namespace Serilog.Sinks.EventLog
 	        source = source.Replace(">", "_");
 
 	        _textFormatter = textFormatter;
-	        _source = source;
 	        _logName = logName;
 
 	        if (string.IsNullOrWhiteSpace(_logName))
@@ -67,50 +61,49 @@ namespace Serilog.Sinks.EventLog
 
 	        _log = new System.Diagnostics.EventLog(_logName);
 
-	        var sourceData = new EventSourceCreationData(source, logName) {MachineName = machineName};
-
 	        if (manageEventSource)
 	        {
-	            var sourceExistsInAnyLog = true;
-	            Action logSourceMoved = () => { };
+                var sourceData = new EventSourceCreationData(source, logName) { MachineName = machineName };
+                Action logSourceMoved = () => { };
 
-                sourceExistsInAnyLog = System.Diagnostics.EventLog.SourceExists(source, machineName);
-
-                if(sourceExistsInAnyLog)
-                {
+                var sourceExistsInAnyLog = System.Diagnostics.EventLog.SourceExists(source, machineName);
+	            if (sourceExistsInAnyLog)
+	            {
 	                var existingLogWithSourceName = System.Diagnostics.EventLog.LogNameFromSourceName(source, machineName);
 
 	                if (!string.IsNullOrWhiteSpace(existingLogWithSourceName))
 	                {
-	                    var existingLogWithSource = new System.Diagnostics.EventLog(existingLogWithSourceName);
-                        //remove it from previous log so we can associated it with the current logName
+	                    //remove it from previous log so we can associated it with the current logName
 	                    System.Diagnostics.EventLog.DeleteEventSource(source, machineName);
 
-                        //stash a reference to this guy so we can add a log entry noting the logs your looking for are in the
-                        //log previously associated with "source"
-                        //we don't log here in case creating the event source fails (if the create failed, an entry here would be misleading)
-                        logSourceMoved = () =>
-                        {
-                            var metaSource = $"serilog-{_logName}";
-                            if (!System.Diagnostics.EventLog.SourceExists(metaSource, machineName))
-                                System.Diagnostics.EventLog.CreateEventSource(new EventSourceCreationData(metaSource, _logName)
-                                {
-                                    MachineName = machineName
-                                });
+	                    //stash a reference to this guy so we can add a log entry noting the logs your looking for are in the
+	                    //log previously associated with "source"
+	                    //we don't log here in case creating the event source fails (if the create failed, an entry here would be misleading)
+	                    logSourceMoved = () =>
+	                    {
+	                        var metaSource = $"serilog-{_logName}";
+	                        if (!System.Diagnostics.EventLog.SourceExists(metaSource, machineName))
+	                            System.Diagnostics.EventLog.CreateEventSource(new EventSourceCreationData(metaSource,
+	                                _logName)
+	                            {
+	                                MachineName = machineName
+	                            });
 
-                            _log.Source = metaSource;
-                            _log.WriteEntry(
-                                message: $"Event source {source} was previously registered in log {existingLogWithSourceName}. " +
-                                    $"The source has been registered with this log, {logName}, however a computer restart is required " +
-                                    $"before event logs will appear in {logName} with source {source}. Until then, messages will be logged to {existingLogWithSourceName}.",
-                                type: EventLogEntryType.Warning,
-                                eventID: (int)LogEventLevel.Warning);
-                        };
-                    }
+	                        _log.Source = metaSource;
+	                        _log.WriteEntry(
+	                            message:
+	                                $"Event source {source} was previously registered in log {existingLogWithSourceName}. " +
+	                                $"The source has been registered with this log, {logName}, however a computer restart may be required " +
+	                                $"before event logs will appear in {logName} with source {source}. Until then, messages may be logged to {existingLogWithSourceName}.",
+	                            type: EventLogEntryType.Warning,
+	                            eventID: (int) LogEventLevel.Warning);
+	                    };
+	                }
 	            }
-
-	            if (!sourceExistsInAnyLog)
-	                System.Diagnostics.EventLog.CreateEventSource(sourceData);
+	            else
+	            {
+                    System.Diagnostics.EventLog.CreateEventSource(sourceData);
+                }
 
 	            logSourceMoved();
 	        }
