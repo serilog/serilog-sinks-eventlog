@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using NUnit.Framework;
 
 namespace Serilog.Sinks.EventLog.Tests
@@ -137,6 +138,7 @@ namespace Serilog.Sinks.EventLog.Tests
 
         private bool EventLogMessageWithSpecificBodyExists(string partOfBody, string logName = "")
         {
+            Thread.Sleep(100);
             var log = string.IsNullOrWhiteSpace(logName) ? ApplicationLog : GetLog(logName);
             return log.Entries.Cast<EventLogEntry>().Any(entry => entry.Message.Contains(partOfBody));
         }
