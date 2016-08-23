@@ -63,7 +63,7 @@ namespace Serilog.Sinks.EventLog
 
 	        if (manageEventSource)
 	        {
-                var sourceData = new EventSourceCreationData(source, logName) { MachineName = machineName };
+                var sourceData = new EventSourceCreationData(source, _logName) { MachineName = machineName };
                 Action logSourceMoved = () => { };
 
                 var sourceExistsInAnyLog = System.Diagnostics.EventLog.SourceExists(source, machineName);
@@ -93,8 +93,8 @@ namespace Serilog.Sinks.EventLog
 	                        _log.WriteEntry(
 	                            message:
 	                                $"Event source {source} was previously registered in log {existingLogWithSourceName}. " +
-	                                $"The source has been registered with this log, {logName}, however a computer restart may be required " +
-	                                $"before event logs will appear in {logName} with source {source}. Until then, messages may be logged to {existingLogWithSourceName}.",
+	                                $"The source has been registered with this log, {_logName}, however a computer restart may be required " +
+	                                $"before event logs will appear in {_logName} with source {source}. Until then, messages may be logged to {existingLogWithSourceName}.",
 	                            type: EventLogEntryType.Warning,
 	                            eventID: (int) LogEventLevel.Warning);
 	                    };

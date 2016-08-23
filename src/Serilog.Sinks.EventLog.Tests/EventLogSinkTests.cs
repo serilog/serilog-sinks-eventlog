@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
+using Serilog.Formatting.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Serilog.Sinks.EventLog.Tests
 {
@@ -13,6 +15,42 @@ namespace Serilog.Sinks.EventLog.Tests
         private readonly string EVENT_LOG_SOURCE = "EventLogSinkTests";
 
         [Test]
+        public void EmittingJsonFormattedEventsWorks()
+        {
+            var log = new LoggerConfiguration()
+                .WriteTo.EventLog(new JsonFormatter(), EVENT_LOG_SOURCE)
+                .CreateLogger();
+
+            var message = $"This is a JSON message with a {Guid.NewGuid().ToString("D")}";
+            log.Information(message);
+            var messageFromLogEvent = EventLogMessageWithSpecificBody(message);
+            Assert.IsNotNull(messageFromLogEvent, "The message was not found in the eventlog.");
+            AssertJsonIsCorrect(messageFromLogEvent, message);
+        }
+
+
+        [Test]
+        public void EmittingJsonFormattedEventsFromAppSettingsWorks()
+        {
+            var log = new LoggerConfiguration()
+                .ReadFrom.AppSettings()
+                .CreateLogger();
+
+            var message = $"This is a JSON message with a {Guid.NewGuid().ToString("D")}";
+            log.Information(message);
+            var messageFromLogEvent = EventLogMessageWithSpecificBody(message);
+            Assert.IsNotNull(messageFromLogEvent, "The message was not found in the eventlog.");
+            AssertJsonIsCorrect(messageFromLogEvent, message);
+
+        }
+
+        private void AssertJsonIsCorrect(string json, string message)
+        {
+            var jsonObject = JObject.Parse(json);
+            Assert.IsTrue((string)jsonObject["MessageTemplate"] == message);
+        }
+
+        [Test]
         public void EmittingNormalEventsWorks()
         {
             var log = new LoggerConfiguration()
@@ -21,7 +59,6 @@ namespace Serilog.Sinks.EventLog.Tests
 
             var guid = Guid.NewGuid().ToString("D");
             log.Information("This is a normal mesage with a {Guid}", guid);
-
             Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid),
                 "The message was not found in the eventlog.");
         }
@@ -102,7 +139,7 @@ namespace Serilog.Sinks.EventLog.Tests
             var log = new LoggerConfiguration()
                 .WriteTo.EventLog(
                     //can't use same source in different log
-                    source: $"{EVENT_LOG_SOURCE}-{CUSTOM_LOG_NAME}", 
+                    source: $"{EVENT_LOG_SOURCE}-{CUSTOM_LOG_NAME}",
                     logName: CUSTOM_LOG_NAME)
                 .CreateLogger();
 
@@ -142,6 +179,11 @@ namespace Serilog.Sinks.EventLog.Tests
         {
             var log = string.IsNullOrWhiteSpace(logName) ? ApplicationLog : GetLog(logName);
             return log.Entries.Cast<EventLogEntry>().Any(entry => entry.Message.Contains(partOfBody));
+        }
+
+        private string EventLogMessageWithSpecificBody(string partOfBody)
+        {
+            return ApplicationLog.Entries.Cast<EventLogEntry>().FirstOrDefault(entry => entry.Message.Contains(partOfBody))?.Message;
         }
 
         private static System.Diagnostics.EventLog ApplicationLog
