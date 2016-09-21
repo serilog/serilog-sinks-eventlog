@@ -19,7 +19,7 @@ namespace Serilog.Sinks.EventLog.Tests
         public void EmittingJsonFormattedEventsWorks()
         {
             var log = new LoggerConfiguration()
-                .WriteTo.EventLog(new JsonFormatter(), EventLogSource)
+                .WriteTo.EventLog(new JsonFormatter(), EventLogSource, manageEventSource: true)
                 .CreateLogger();
 
             var message = $"This is a JSON message with a {Guid.NewGuid():D}";
@@ -55,7 +55,7 @@ namespace Serilog.Sinks.EventLog.Tests
         public void EmittingNormalEventsWorks()
         {
             var log = new LoggerConfiguration()
-                .WriteTo.EventLog(EventLogSource)
+                .WriteTo.EventLog(EventLogSource, manageEventSource: true)
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
@@ -68,7 +68,7 @@ namespace Serilog.Sinks.EventLog.Tests
         public void UsingAngleBracketsInSourceWorks()
         {
             var log = new LoggerConfiguration()
-                .WriteTo.EventLog("EventLogSink<Tests>")
+                .WriteTo.EventLog("EventLogSink<Tests>", manageEventSource: true)
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
@@ -84,7 +84,7 @@ namespace Serilog.Sinks.EventLog.Tests
             for (var i = 199; i < 270; i+=10)
             {
                 var log = new LoggerConfiguration()
-                    .WriteTo.EventLog(EventLogSource + new string('x', i - EventLogSource.Length))
+                    .WriteTo.EventLog(EventLogSource + new string('x', i - EventLogSource.Length), manageEventSource: true)
                     .CreateLogger();
 
                 var guid = Guid.NewGuid().ToString("D");
@@ -108,7 +108,7 @@ namespace Serilog.Sinks.EventLog.Tests
             foreach (var charcount in charcounts)
             {
                 var log = new LoggerConfiguration()
-                    .WriteTo.EventLog(EventLogSource)
+                    .WriteTo.EventLog(EventLogSource, manageEventSource: true)
                     .CreateLogger();
 
                 var guid = Guid.NewGuid().ToString("D");
@@ -125,7 +125,7 @@ namespace Serilog.Sinks.EventLog.Tests
         public void UsingSpecialCharsWorks()
         {
             var log = new LoggerConfiguration()
-                .WriteTo.EventLog(EventLogSource)
+                .WriteTo.EventLog(EventLogSource, manageEventSource: true)
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
@@ -141,7 +141,8 @@ namespace Serilog.Sinks.EventLog.Tests
                 .WriteTo.EventLog(
                     //can't use same source in different log
                     source: $"{EventLogSource}-{CustomLogName}",
-                    logName: CustomLogName)
+                    logName: CustomLogName, 
+                    manageEventSource: true)
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
@@ -160,7 +161,7 @@ namespace Serilog.Sinks.EventLog.Tests
 
             //then try to use it in our custom log
             var log = new LoggerConfiguration()
-                .WriteTo.EventLog(source: source, logName: CustomLogName)
+                .WriteTo.EventLog(source: source, logName: CustomLogName, manageEventSource: true)
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
@@ -187,10 +188,7 @@ namespace Serilog.Sinks.EventLog.Tests
             return ApplicationLog.Entries.Cast<EventLogEntry>().FirstOrDefault(entry => entry.Message.Contains(partOfBody))?.Message;
         }
 
-        static System.Diagnostics.EventLog ApplicationLog
-        {
-            get { return GetLog("Application"); }
-        }
+        static System.Diagnostics.EventLog ApplicationLog => GetLog("Application");
 
         static System.Diagnostics.EventLog GetLog(string logName)
         {
