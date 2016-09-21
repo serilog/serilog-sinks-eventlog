@@ -26,7 +26,7 @@ namespace Serilog
 	/// </summary>
 	public static class LoggerConfigurationEventLogExtensions
 	{
-		private const string DefaultOutputTemplate = "{Timestamp} [{Level}] {Message}{NewLine}{Exception}";
+	    const string DefaultOutputTemplate = "{Message}{NewLine}{Exception}";
 
 		/// <summary>
 		/// Adds a sink that writes log events to the Windows event log.
@@ -35,7 +35,7 @@ namespace Serilog
 		/// <param name="source">The source name by which the application is registered on the local computer. </param>
 		/// <param name="logName">The name of the log the source's entries are written to. Possible values include Application, System, or a custom event log. </param>
 		/// <param name="machineName">The name of the machine hosting the event log written to.  The local machine by default.</param>
-        /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
+        /// <param name="manageEventSource">If true, check/create event source as required.  Defaults to false i.e. do not allow sink to manage event source creation.</param>
 		/// <param name="outputTemplate">A message template describing the format used to write to the sink.  The default is "{Timestamp} [{Level}] {Message}{NewLine}{Exception}".</param>
 		/// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
 		/// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
@@ -49,10 +49,9 @@ namespace Serilog
             bool manageEventSource = true,
 			string outputTemplate = DefaultOutputTemplate,
 			IFormatProvider formatProvider = null,
-			LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum
-			)
+			LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
 		{
-			if (loggerConfiguration == null) throw new ArgumentNullException("loggerConfiguration");
+			if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
 
 			var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
 
@@ -81,9 +80,8 @@ namespace Serilog
             string source,
             string logName = null,
             string machineName = ".",
-            bool manageEventSource = true,
-            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum
-            )
+            bool manageEventSource = false,
+            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
