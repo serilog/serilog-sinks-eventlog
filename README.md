@@ -26,5 +26,9 @@ Log.Information("Hello, Windows Event Log!");
 Log.CloseAndFlush();
 ```
 
-Events will appear under the log of the specified name.
+Events will appear under the Application log with the specified source name:
+
+![Screenshot](https://raw.githubusercontent.com/serilog/serilog-sinks-eventlog/dev/assets/Screenshot.png)
+
+
 
