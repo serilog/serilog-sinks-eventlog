@@ -19,11 +19,7 @@ namespace Serilog.Sinks.EventLog
     /// <summary>
     /// Hash functions for message templates. See <see cref="Compute"/>.
     /// </summary>
-    //This class is left internal bc it's been borrowed from here
-    //https://github.com/serilog/serilog-formatting-compact/blob/dev/src/Serilog.Formatting.Compact/Formatting/Compact/EventIdHash.cs
-    //Alternatively, we could take a dependency on the formatting library and use that event hash but the tradeoff would be
-    //adding an additional dependency to nuget- could result in binding redirects or version conflicts as asms are updated moving forward
-    internal static class EventIdHash
+    static class EventIdHash
     {
         /// <summary>
         /// Compute a 32-bit hash of the provided <paramref name="messageTemplate"/>. The
@@ -32,7 +28,7 @@ namespace Serilog.Sinks.EventLog
         /// </summary>
         /// <param name="messageTemplate">A message template.</param>
         /// <returns>A 32-bit hash of the template.</returns>
-        public static uint Compute(string messageTemplate)
+        public static int Compute(string messageTemplate)
         {
             if (messageTemplate == null) throw new ArgumentNullException(nameof(messageTemplate));
 
@@ -49,7 +45,10 @@ namespace Serilog.Sinks.EventLog
                 hash += (hash << 3);
                 hash ^= (hash >> 11);
                 hash += (hash << 15);
-                return hash;
+
+                //even though the api is type int, eventID must be between 0 and 65535
+                //https://msdn.microsoft.com/en-us/library/d3159s0c(v=vs.110).aspx
+                return (ushort) hash;
             }
         }
     }
