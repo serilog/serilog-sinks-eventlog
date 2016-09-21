@@ -1,16 +1,34 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.EventLog", "src\Serilog.Sinks.EventLog\Serilog.Sinks.EventLog.csproj", "{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.EventLog.Tests", "src\Serilog.Sinks.EventLog.Tests\Serilog.Sinks.EventLog.Tests.csproj", "{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1AE6C6F3-6380-4F04-8FE5-3BBACE95DA83}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{1AE6C6F3-6380-4F04-8FE5-3BBACE95DA83}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		Build.ps1 = Build.ps1
+		CHANGES.md = CHANGES.md
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BACB7AEE-15AC-4C6F-9776-81E3F5527A1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{3F4F5176-8954-4058-970C-062A2244A6C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.EventLog", "src\Serilog.Sinks.EventLog\Serilog.Sinks.EventLog.csproj", "{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.EventLog.Tests", "test\Serilog.Sinks.EventLog.Tests\Serilog.Sinks.EventLog.Tests.csproj", "{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{E6658BF7-57B7-43E0-96CC-A86555CE855E}"
+	ProjectSection(SolutionItems) = preProject
+		assets\CommonAssemblyInfo.cs = assets\CommonAssemblyInfo.cs
+		assets\Serilog.snk = assets\Serilog.snk
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{901A383E-2BD3-448A-9347-930F583D2FA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "sample\Sample\Sample.csproj", "{931901FC-469E-465C-86E3-1C891E29A2BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,8 +44,17 @@ Global
 		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{931901FC-469E-465C-86E3-1C891E29A2BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{931901FC-469E-465C-86E3-1C891E29A2BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{931901FC-469E-465C-86E3-1C891E29A2BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{931901FC-469E-465C-86E3-1C891E29A2BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06} = {BACB7AEE-15AC-4C6F-9776-81E3F5527A1D}
+		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0} = {3F4F5176-8954-4058-970C-062A2244A6C4}
+		{931901FC-469E-465C-86E3-1C891E29A2BE} = {901A383E-2BD3-448A-9347-930F583D2FA9}
 	EndGlobalSection
 EndGlobal
