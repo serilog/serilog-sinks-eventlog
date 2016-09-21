@@ -21,42 +21,42 @@ using Serilog.Formatting;
 
 namespace Serilog
 {
-	/// <summary>
-	/// Adds the WriteTo.EventLog() extension method to <see cref="LoggerConfiguration"/>.
-	/// </summary>
-	public static class LoggerConfigurationEventLogExtensions
-	{
-	    const string DefaultOutputTemplate = "{Message}{NewLine}{Exception}";
+    /// <summary>
+    /// Adds the WriteTo.EventLog() extension method to <see cref="LoggerConfiguration"/>.
+    /// </summary>
+    public static class LoggerConfigurationEventLogExtensions
+    {
+        const string DefaultOutputTemplate = "{Message}{NewLine}{Exception}";
 
-		/// <summary>
-		/// Adds a sink that writes log events to the Windows event log.
-		/// </summary>
-		/// <param name="loggerConfiguration">The logger configuration.</param>
-		/// <param name="source">The source name by which the application is registered on the local computer. </param>
-		/// <param name="logName">The name of the log the source's entries are written to. Possible values include Application, System, or a custom event log. </param>
-		/// <param name="machineName">The name of the machine hosting the event log written to.  The local machine by default.</param>
+        /// <summary>
+        /// Adds a sink that writes log events to the Windows event log.
+        /// </summary>
+        /// <param name="loggerConfiguration">The logger configuration.</param>
+        /// <param name="source">The source name by which the application is registered on the local computer. </param>
+        /// <param name="logName">The name of the log the source's entries are written to. Possible values include Application, System, or a custom event log. </param>
+        /// <param name="machineName">The name of the machine hosting the event log written to.  The local machine by default.</param>
         /// <param name="manageEventSource">If true, check/create event source as required.  Defaults to false i.e. do not allow sink to manage event source creation.</param>
-		/// <param name="outputTemplate">A message template describing the format used to write to the sink.  The default is "{Timestamp} [{Level}] {Message}{NewLine}{Exception}".</param>
-		/// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
-		/// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
-		/// <returns>Logger configuration, allowing configuration to continue.</returns>
-		/// <exception cref="ArgumentNullException">A required parameter is null.</exception>
-		public static LoggerConfiguration EventLog(
-			this LoggerSinkConfiguration loggerConfiguration,
-			string source,
-			string logName = null,
-			string machineName = ".",
+        /// <param name="outputTemplate">A message template describing the format used to write to the sink.  The default is "{Timestamp} [{Level}] {Message}{NewLine}{Exception}".</param>
+        /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
+        /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
+        /// <returns>Logger configuration, allowing configuration to continue.</returns>
+        /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
+        public static LoggerConfiguration EventLog(
+            this LoggerSinkConfiguration loggerConfiguration,
+            string source,
+            string logName = null,
+            string machineName = ".",
             bool manageEventSource = true,
-			string outputTemplate = DefaultOutputTemplate,
-			IFormatProvider formatProvider = null,
-			LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
-		{
-			if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
+            string outputTemplate = DefaultOutputTemplate,
+            IFormatProvider formatProvider = null,
+            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
+        {
+            if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
 
-			var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
+            var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
 
-			return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource), restrictedToMinimumLevel);
-		}
+            return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource), restrictedToMinimumLevel);
+        }
 
         /// <summary>
         /// Adds a sink that writes log events to the Windows event log.
@@ -74,7 +74,7 @@ namespace Serilog
         /// </returns>
         /// <exception cref="System.ArgumentNullException">loggerConfiguration</exception>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
-		public static LoggerConfiguration EventLog(
+        public static LoggerConfiguration EventLog(
             this LoggerSinkConfiguration loggerConfiguration,
             ITextFormatter formatter,
             string source,
