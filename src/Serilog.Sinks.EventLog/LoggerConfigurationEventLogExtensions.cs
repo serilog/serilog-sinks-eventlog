@@ -46,7 +46,7 @@ namespace Serilog
             string source,
             string logName = null,
             string machineName = ".",
-            bool manageEventSource = true,
+            bool manageEventSource = false,
             string outputTemplate = DefaultOutputTemplate,
             IFormatProvider formatProvider = null,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
