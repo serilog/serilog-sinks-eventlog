@@ -1,0 +1,34 @@
+﻿{
+  "version": "3.0.36-*",
+  "title": "Serilog.Sinks.EventLog",
+  "description": "Serilog event sink that writes to the Windows event log.",
+  "authors": [ "Jeremy Clarke", "Fabian Wetzel" ],
+  "copyright": "Copyright © Serilog Contributors 2016",
+  "language": "en-US",
+
+  "packOptions": {
+    "iconUrl": "http://serilog.net/images/serilog-sink-nuget.png",
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "projectUrl": "http://serilog.net",
+    "tags": [ "serilog", "logging", "eventlog", "event", "log", "viewer" ],
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/serilog/serilog-sinks-eventlog"
+    }
+  },
+
+  "buildOptions": {
+    "keyFile": "../../assets/Serilog.snk",
+    "warningsAsErrors": true,
+    "xmlDoc": true
+  },
+
+  "dependencies": {
+    "Serilog": "2.0.0"
+  },
+
+  "frameworks": {
+    "net45": {
+    }
+  }
+}
