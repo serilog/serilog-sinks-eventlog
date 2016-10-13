@@ -1,5 +1,5 @@
 ﻿{
-  "version": "3.0.36-*",
+  "version": "3.0.37-*",
   "title": "Serilog.Sinks.EventLog",
   "description": "Serilog event sink that writes to the Windows event log.",
   "authors": [ "Jeremy Clarke", "Fabian Wetzel" ],
