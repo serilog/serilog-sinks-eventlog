@@ -4,6 +4,8 @@ using System.Linq;
 using NUnit.Framework;
 using Serilog.Formatting.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 #pragma warning disable Serilog004 // Allow non-constant message templates
 
@@ -34,7 +36,11 @@ namespace Serilog.Sinks.EventLog.Tests
         public void EmittingJsonFormattedEventsFromAppSettingsWorks()
         {
             var log = new LoggerConfiguration()
-                .ReadFrom.AppSettings()
+                .ReadFrom.Configuration(
+                    new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddXmlFile("appsettings.xml")
+                        .Build())
                 .CreateLogger();
 
             var message = $"This is a JSON message with a {Guid.NewGuid():D}";

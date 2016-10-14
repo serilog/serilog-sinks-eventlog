@@ -1,0 +1,26 @@
+﻿{
+  "testRunner": "nunit",
+
+  "dependencies": {
+    "Serilog.Sinks.EventLog": { "target": "project" },
+
+    "Serilog": "2.2.1",
+    "Serilog.Settings.Configuration": "2.1.0",
+
+    "Microsoft.Extensions.Configuration.Xml": "1.0.0",
+    "Newtonsoft.Json": "9.0.1",
+
+    "NUnit": "3.5.0",
+    "dotnet-test-nunit": "3.4.0-*"
+  },
+
+  "buildOptions": {
+    "keyFile": "../../assets/Serilog.snk",
+    "copyToOutput": [ "appsettings.xml" ]
+  },
+
+  "frameworks": {
+    "net451": {
+    }
+  }
+}
