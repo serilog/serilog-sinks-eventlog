@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BACB7AEE-15AC-4C6F-9776-81E3F5527A1D}"
 EndProject
@@ -13,7 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{E6658B
 		appveyor.yml = appveyor.yml
 		Build.ps1 = Build.ps1
 		CHANGES.md = CHANGES.md
-		global.json = global.json
 		LICENSE = LICENSE
 		NuGet.config = NuGet.config
 		README.md = README.md
@@ -22,11 +21,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{E6658B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{901A383E-2BD3-448A-9347-930F583D2FA9}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Serilog.Sinks.EventLog", "src\Serilog.Sinks.EventLog\Serilog.Sinks.EventLog.xproj", "{890409CD-40C6-4108-9CA8-AEBD431B644C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Sinks.EventLog", "src\Serilog.Sinks.EventLog\Serilog.Sinks.EventLog.csproj", "{890409CD-40C6-4108-9CA8-AEBD431B644C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Serilog.Sinks.EventLog.Tests", "test\Serilog.Sinks.EventLog.Tests\Serilog.Sinks.EventLog.Tests.xproj", "{431537CB-3AA2-44AD-87B0-ACC19FF173B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Sinks.EventLog.Tests", "test\Serilog.Sinks.EventLog.Tests\Serilog.Sinks.EventLog.Tests.csproj", "{431537CB-3AA2-44AD-87B0-ACC19FF173B7}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sample", "sample\Sample\Sample.xproj", "{66B8C35C-5035-433B-9D7E-9F50D75383A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "sample\Sample\Sample.csproj", "{66B8C35C-5035-433B-9D7E-9F50D75383A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
