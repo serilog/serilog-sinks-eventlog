@@ -1,4 +1,4 @@
-﻿// Copyright 2014 Serilog Contributors
+// Copyright 2014 Serilog Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ namespace Serilog.Sinks.EventLog
         const int MaximumSourceNameLengthChars = 212;
         const int SourceMovedEventId = 3;
 
+        readonly IEventIdProvider _eventIdProvider;
         readonly ITextFormatter _textFormatter;
         readonly System.Diagnostics.EventLog _log;
 
@@ -44,7 +45,8 @@ namespace Serilog.Sinks.EventLog
         /// <param name="textFormatter">Supplies culture-specific formatting information, or null.</param>
         /// <param name="machineName">The name of the machine hosting the event log written to.</param>
         /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
-        public EventLogSink(string source, string logName, ITextFormatter textFormatter, string machineName, bool manageEventSource)
+        /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
+        public EventLogSink(string source, string logName, ITextFormatter textFormatter, string machineName, bool manageEventSource, IEventIdProvider eventIdProvider = null)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (textFormatter == null) throw new ArgumentNullException(nameof(textFormatter));
@@ -59,6 +61,7 @@ namespace Serilog.Sinks.EventLog
             source = source.Replace("<", "_");
             source = source.Replace(">", "_");
 
+            _eventIdProvider = eventIdProvider ?? new EventIdHashProvider();
             _textFormatter = textFormatter;
             _log = new System.Diagnostics.EventLog(string.IsNullOrWhiteSpace(logName) ? ApplicationLogName : logName, machineName);
 
@@ -141,7 +144,7 @@ namespace Serilog.Sinks.EventLog
                 payload = payload.Substring(0, MaximumPayloadLengthChars);
             }
 
-            _log.WriteEntry(payload, type, EventIdHash.Compute(logEvent.MessageTemplate.Text));
+            _log.WriteEntry(payload, type, _eventIdProvider.Compute(logEvent));
         }
 
         static EventLogEntryType LevelToEventLogEntryType(LogEventLevel logEventLevel)

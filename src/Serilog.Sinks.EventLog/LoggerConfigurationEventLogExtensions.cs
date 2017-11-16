@@ -1,4 +1,4 @@
-﻿// Copyright 2014 Serilog Contributors
+// Copyright 2014 Serilog Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ namespace Serilog
         /// <param name="outputTemplate">A message template describing the format used to write to the sink.  The default is "{Timestamp} [{Level}] {Message}{NewLine}{Exception}".</param>
         /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
         /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
+        /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
         public static LoggerConfiguration EventLog(
@@ -49,13 +50,14 @@ namespace Serilog
             bool manageEventSource = false,
             string outputTemplate = DefaultOutputTemplate,
             IFormatProvider formatProvider = null,
-            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
+            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
+            IEventIdProvider eventIdProvider = null)
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
 
             var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
 
-            return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource), restrictedToMinimumLevel);
+            return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider), restrictedToMinimumLevel);
         }
 
         /// <summary>
@@ -68,6 +70,7 @@ namespace Serilog
         /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
         /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
         /// <param name="formatter">Formatter to control how events are rendered into the file. To control
+        /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
         /// plain text formatting, use the overload that accepts an output template instead.</param>
         /// <returns>
         /// Logger configuration, allowing configuration to continue.
@@ -81,12 +84,13 @@ namespace Serilog
             string logName = null,
             string machineName = ".",
             bool manageEventSource = false,
-            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
+            LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
+            IEventIdProvider eventIdProvider = null)
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
 
-            return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource), restrictedToMinimumLevel);
+            return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider), restrictedToMinimumLevel);
         }
     }
 }
