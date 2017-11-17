@@ -27,7 +27,7 @@ namespace Serilog.Sinks.EventLog
         /// </summary>
         /// <param name="logEvent">The log event to compute the event id from.</param>
         /// <returns>Computed event id based off the given log.</returns>
-        public ushort Compute(LogEvent logEvent) => (ushort)Compute(logEvent.MessageTemplate.Text);
+        public ushort ComputeEventId(LogEvent logEvent) => (ushort)Compute(logEvent.MessageTemplate.Text);
 
         /// <summary>
         /// Compute a 32-bit hash of the provided <paramref name="messageTemplate"/>. The

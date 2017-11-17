@@ -246,7 +246,7 @@ namespace Serilog.Sinks.EventLog.Tests
             public const ushort MessageWithKnownIdEventId = 12;
             public const string MessageWithKnownId = "Event {Guid} - this message has a known id";
 
-            public ushort Compute(LogEvent logEvent)
+            public ushort ComputeEventId(LogEvent logEvent)
             {
                 if (string.Equals(logEvent.MessageTemplate.Text, MessageWithKnownId))
                     return MessageWithKnownIdEventId;

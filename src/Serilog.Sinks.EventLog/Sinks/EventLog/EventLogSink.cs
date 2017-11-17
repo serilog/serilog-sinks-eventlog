@@ -144,7 +144,7 @@ namespace Serilog.Sinks.EventLog
                 payload = payload.Substring(0, MaximumPayloadLengthChars);
             }
 
-            _log.WriteEntry(payload, type, _eventIdProvider.Compute(logEvent));
+            _log.WriteEntry(payload, type, _eventIdProvider.ComputeEventId(logEvent));
         }
 
         static EventLogEntryType LevelToEventLogEntryType(LogEventLevel logEventLevel)

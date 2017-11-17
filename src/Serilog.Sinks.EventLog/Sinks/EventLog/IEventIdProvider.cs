@@ -26,6 +26,6 @@ namespace Serilog.Sinks.EventLog
         /// </summary>
         /// <param name="logEvent">The log event to compute the event id from.</param>
         /// <returns>Computed event id based off the given log.</returns>
-        ushort Compute(LogEvent logEvent);
+        ushort ComputeEventId(LogEvent logEvent);
     }
 }
