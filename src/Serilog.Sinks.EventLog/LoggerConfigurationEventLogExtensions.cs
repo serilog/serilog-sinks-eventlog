@@ -57,6 +57,11 @@ namespace Serilog
 
             var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
 
+            if (eventIdProvider == null)
+            {
+                return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource), restrictedToMinimumLevel);
+            }
+
             return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider), restrictedToMinimumLevel);
         }
 
@@ -70,8 +75,8 @@ namespace Serilog
         /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
         /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
         /// <param name="formatter">Formatter to control how events are rendered into the file. To control
-        /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
         /// plain text formatting, use the overload that accepts an output template instead.</param>
+        /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
         /// <returns>
         /// Logger configuration, allowing configuration to continue.
         /// </returns>
@@ -89,6 +94,11 @@ namespace Serilog
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
+
+            if (eventIdProvider == null)
+            {
+                return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource), restrictedToMinimumLevel);
+            }
 
             return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider), restrictedToMinimumLevel);
         }
