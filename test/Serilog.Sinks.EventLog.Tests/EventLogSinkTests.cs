@@ -39,7 +39,7 @@ namespace Serilog.Sinks.EventLog.Tests
             var log = new LoggerConfiguration()
                 .ReadFrom.Configuration(
                     new ConfigurationBuilder()
-                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                         .AddXmlFile("appsettings.xml")
                         .Build())
                 .CreateLogger();
