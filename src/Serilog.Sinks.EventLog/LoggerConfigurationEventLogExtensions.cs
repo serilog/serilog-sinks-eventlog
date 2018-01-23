@@ -59,12 +59,13 @@ namespace Serilog
                 throw new ArgumentNullException(nameof(loggerConfiguration));
             }
 
+#if NETSTANDARD2_0
             // Verify the code is running on Windows.
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
             {
-                throw new PlatformNotSupportedException(RuntimeInformation.OSDescription);
+                throw new PlatformNotSupportedException(System.Runtime.InteropServices.RuntimeInformation.OSDescription);
             }
-
+#endif
             var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
 
             if (eventIdProvider == null)
