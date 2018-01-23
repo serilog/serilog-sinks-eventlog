@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0;</TargetFrameworks>
+    <TargetFrameworks>net452;net461;netcoreapp2.0;</TargetFrameworks>
     <AssemblyName>Sample</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>Sample</PackageId>
@@ -13,5 +13,10 @@
 
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 </Project>
