@@ -19,6 +19,10 @@ using Serilog.Formatting.Display;
 using Serilog.Sinks.EventLog;
 using Serilog.Formatting;
 
+#if NETSTANDARD2_0
+using System.Runtime.InteropServices;
+#endif
+
 namespace Serilog
 {
     /// <summary>
@@ -53,8 +57,19 @@ namespace Serilog
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             IEventIdProvider eventIdProvider = null)
         {
-            if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
+            if (loggerConfiguration == null)
+            {
+                throw new ArgumentNullException(nameof(loggerConfiguration));
+            }
 
+
+#if NETSTANDARD2_0
+            // Verify the code is running on Windows.
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                throw new PlatformNotSupportedException(RuntimeInformation.OSDescription);
+            }
+#endif
             var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
 
             if (eventIdProvider == null)
