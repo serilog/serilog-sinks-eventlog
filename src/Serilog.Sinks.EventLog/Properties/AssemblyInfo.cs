@@ -1,5 +1,3 @@
-﻿using System.Reflection;
+using System.Reflection;
 
-[assembly: AssemblyTitle("Serilog.Sinks.EventLog")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyCopyright("Copyright © Serilog Contributors 2014")]
+[assembly: AssemblyVersion("3.0.0.0")]

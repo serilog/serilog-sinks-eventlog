@@ -1,4 +1,4 @@
-﻿// Copyright 2014 Serilog Contributors
+// Copyright 2014 Serilog Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ namespace Serilog.Sinks.EventLog
         const int MaximumSourceNameLengthChars = 212;
         const int SourceMovedEventId = 3;
 
+        readonly IEventIdProvider _eventIdProvider;
         readonly ITextFormatter _textFormatter;
         readonly System.Diagnostics.EventLog _log;
 
@@ -45,9 +46,24 @@ namespace Serilog.Sinks.EventLog
         /// <param name="machineName">The name of the machine hosting the event log written to.</param>
         /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
         public EventLogSink(string source, string logName, ITextFormatter textFormatter, string machineName, bool manageEventSource)
+            : this(source, logName, textFormatter, machineName, manageEventSource, new EventIdHashProvider())
+        {
+        }
+
+        /// <summary>
+        /// Construct a sink posting to the Windows event log, creating the specified <paramref name="source"/> if it does not exist.
+        /// </summary>
+        /// <param name="source">The source name by which the application is registered on the local computer. </param>
+        /// <param name="logName">The name of the log the source's entries are written to. Possible values include Application, System, or a custom event log.</param>
+        /// <param name="textFormatter">Supplies culture-specific formatting information, or null.</param>
+        /// <param name="machineName">The name of the machine hosting the event log written to.</param>
+        /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
+        /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
+        public EventLogSink(string source, string logName, ITextFormatter textFormatter, string machineName, bool manageEventSource, IEventIdProvider eventIdProvider)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (textFormatter == null) throw new ArgumentNullException(nameof(textFormatter));
+            if (eventIdProvider == null) throw new ArgumentNullException(nameof(eventIdProvider));
 
             // The source is limitted in length and allowed chars, see: https://msdn.microsoft.com/en-us/library/e29k5ebc%28v=vs.110%29.aspx
             if (source.Length > MaximumSourceNameLengthChars)
@@ -59,6 +75,7 @@ namespace Serilog.Sinks.EventLog
             source = source.Replace("<", "_");
             source = source.Replace(">", "_");
 
+            _eventIdProvider = eventIdProvider;
             _textFormatter = textFormatter;
             _log = new System.Diagnostics.EventLog(string.IsNullOrWhiteSpace(logName) ? ApplicationLogName : logName, machineName);
 
@@ -141,7 +158,7 @@ namespace Serilog.Sinks.EventLog
                 payload = payload.Substring(0, MaximumPayloadLengthChars);
             }
 
-            _log.WriteEntry(payload, type, EventIdHash.Compute(logEvent.MessageTemplate.Text));
+            _log.WriteEntry(payload, type, _eventIdProvider.ComputeEventId(logEvent));
         }
 
         static EventLogEntryType LevelToEventLogEntryType(LogEventLevel logEventLevel)

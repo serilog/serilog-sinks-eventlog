@@ -1,34 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{1AE6C6F3-6380-4F04-8FE5-3BBACE95DA83}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		Build.ps1 = Build.ps1
-		CHANGES.md = CHANGES.md
-		LICENSE = LICENSE
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BACB7AEE-15AC-4C6F-9776-81E3F5527A1D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{3F4F5176-8954-4058-970C-062A2244A6C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.EventLog", "src\Serilog.Sinks.EventLog\Serilog.Sinks.EventLog.csproj", "{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.EventLog.Tests", "test\Serilog.Sinks.EventLog.Tests\Serilog.Sinks.EventLog.Tests.csproj", "{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{E6658BF7-57B7-43E0-96CC-A86555CE855E}"
 	ProjectSection(SolutionItems) = preProject
-		assets\CommonAssemblyInfo.cs = assets\CommonAssemblyInfo.cs
+		.editorconfig = .editorconfig
+		appveyor.yml = appveyor.yml
+		Build.ps1 = Build.ps1
+		CHANGES.md = CHANGES.md
+		LICENSE = LICENSE
+		NuGet.config = NuGet.config
+		README.md = README.md
 		assets\Serilog.snk = assets\Serilog.snk
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{901A383E-2BD3-448A-9347-930F583D2FA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "sample\Sample\Sample.csproj", "{931901FC-469E-465C-86E3-1C891E29A2BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Sinks.EventLog", "src\Serilog.Sinks.EventLog\Serilog.Sinks.EventLog.csproj", "{890409CD-40C6-4108-9CA8-AEBD431B644C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Sinks.EventLog.Tests", "test\Serilog.Sinks.EventLog.Tests\Serilog.Sinks.EventLog.Tests.csproj", "{431537CB-3AA2-44AD-87B0-ACC19FF173B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "sample\Sample\Sample.csproj", "{66B8C35C-5035-433B-9D7E-9F50D75383A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,25 +33,25 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{931901FC-469E-465C-86E3-1C891E29A2BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{931901FC-469E-465C-86E3-1C891E29A2BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{931901FC-469E-465C-86E3-1C891E29A2BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{931901FC-469E-465C-86E3-1C891E29A2BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{890409CD-40C6-4108-9CA8-AEBD431B644C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{890409CD-40C6-4108-9CA8-AEBD431B644C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{890409CD-40C6-4108-9CA8-AEBD431B644C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{890409CD-40C6-4108-9CA8-AEBD431B644C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{431537CB-3AA2-44AD-87B0-ACC19FF173B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{431537CB-3AA2-44AD-87B0-ACC19FF173B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{431537CB-3AA2-44AD-87B0-ACC19FF173B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{431537CB-3AA2-44AD-87B0-ACC19FF173B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66B8C35C-5035-433B-9D7E-9F50D75383A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66B8C35C-5035-433B-9D7E-9F50D75383A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66B8C35C-5035-433B-9D7E-9F50D75383A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66B8C35C-5035-433B-9D7E-9F50D75383A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{EEA8B8EB-0FE6-44C2-9D10-02B7E3DEAD06} = {BACB7AEE-15AC-4C6F-9776-81E3F5527A1D}
-		{A1CBA312-471B-47AE-AA6F-E7A6E27559D0} = {3F4F5176-8954-4058-970C-062A2244A6C4}
-		{931901FC-469E-465C-86E3-1C891E29A2BE} = {901A383E-2BD3-448A-9347-930F583D2FA9}
+		{890409CD-40C6-4108-9CA8-AEBD431B644C} = {BACB7AEE-15AC-4C6F-9776-81E3F5527A1D}
+		{431537CB-3AA2-44AD-87B0-ACC19FF173B7} = {3F4F5176-8954-4058-970C-062A2244A6C4}
+		{66B8C35C-5035-433B-9D7E-9F50D75383A6} = {901A383E-2BD3-448A-9347-930F583D2FA9}
 	EndGlobalSection
 EndGlobal

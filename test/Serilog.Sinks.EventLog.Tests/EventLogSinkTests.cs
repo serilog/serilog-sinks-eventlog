@@ -1,9 +1,12 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
 using Serilog.Formatting.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using Serilog.Events;
 
 #pragma warning disable Serilog004 // Allow non-constant message templates
 
@@ -34,7 +37,11 @@ namespace Serilog.Sinks.EventLog.Tests
         public void EmittingJsonFormattedEventsFromAppSettingsWorks()
         {
             var log = new LoggerConfiguration()
-                .ReadFrom.AppSettings()
+                .ReadFrom.Configuration(
+                    new ConfigurationBuilder()
+                        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                        .AddXmlFile("appsettings.xml")
+                        .Build())
                 .CreateLogger();
 
             var message = $"This is a JSON message with a {Guid.NewGuid():D}";
@@ -177,6 +184,40 @@ namespace Serilog.Sinks.EventLog.Tests
             System.Diagnostics.EventLog.DeleteEventSource(source);
         }
 
+        [Test]
+        public void UsingCustomEventIdProviderLogsMessagesWithSuppliedEventId()
+        {
+            var log = new LoggerConfiguration()
+                .WriteTo.EventLog(EventLogSource, manageEventSource: true, eventIdProvider: new CustomEventIdProvider())
+                .CreateLogger();
+
+            Assert.AreNotEqual(CustomEventIdProvider.MessageWithKnownIdEventId, CustomEventIdProvider.UnknownEventId);
+
+            var knownIdGuid = Guid.NewGuid().ToString("D");
+            log.Information(CustomEventIdProvider.MessageWithKnownId, knownIdGuid);
+
+            Assert.IsTrue(EventLogMessageWithSpecificBodyAndEventIdExists(knownIdGuid, CustomEventIdProvider.MessageWithKnownIdEventId),
+                "The message was with known eventid not found in target eventlog.");
+
+            var unknownIdGuid = Guid.NewGuid().ToString("D");
+            log.Information("unknown message {Guid}", unknownIdGuid);
+
+            Assert.IsTrue(EventLogMessageWithSpecificBodyAndEventIdExists(unknownIdGuid, CustomEventIdProvider.UnknownEventId),
+                "The message was with unknown eventid not found in target eventlog.");
+        }
+
+        bool EventLogMessageWithSpecificBodyAndEventIdExists(string partOfBody, int eventId)
+        {
+            return ApplicationLog
+                .Entries
+                .Cast<EventLogEntry>()
+                .Any(entry =>
+                {
+                    return entry.InstanceId == eventId
+                        && entry.Message.Contains(partOfBody);
+                });
+        }
+
         bool EventLogMessageWithSpecificBodyExists(string partOfBody, string logName = "")
         {
             var log = string.IsNullOrWhiteSpace(logName) ? ApplicationLog : GetLog(logName);
@@ -196,6 +237,22 @@ namespace Serilog.Sinks.EventLog.Tests
             if (evemtlog == null)
                 throw new Exception($"Cannot find log \"{logName}\"");
             return evemtlog;
+        }
+
+        sealed class CustomEventIdProvider : IEventIdProvider
+        {
+            public const ushort UnknownEventId = 1;
+
+            public const ushort MessageWithKnownIdEventId = 12;
+            public const string MessageWithKnownId = "Event {Guid} - this message has a known id";
+
+            public ushort ComputeEventId(LogEvent logEvent)
+            {
+                if (string.Equals(logEvent.MessageTemplate.Text, MessageWithKnownId))
+                    return MessageWithKnownIdEventId;
+
+                return UnknownEventId;
+            }
         }
     }
 }
