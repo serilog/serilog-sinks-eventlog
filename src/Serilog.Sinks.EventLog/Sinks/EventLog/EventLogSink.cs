@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Diagnostics;
-using System.IO;
 using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Formatting;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace Serilog.Sinks.EventLog
 {
@@ -29,7 +31,7 @@ namespace Serilog.Sinks.EventLog
     public class EventLogSink : ILogEventSink
     {
         const string ApplicationLogName = "Application";
-        const int MaximumPayloadLengthChars = 31839;
+        const int MaximumPayloadLengthChars = 31639;
         const int MaximumSourceNameLengthChars = 212;
         const int SourceMovedEventId = 3;
 
@@ -158,7 +160,27 @@ namespace Serilog.Sinks.EventLog
                 payload = payload.Substring(0, MaximumPayloadLengthChars);
             }
 
-            _log.WriteEntry(payload, type, _eventIdProvider.ComputeEventId(logEvent));
+            var payloadSize = payload.Length;
+            var eventInstance = new EventInstance(_eventIdProvider.ComputeEventId(logEvent), 0, type);
+            var parameters = new List<object>()
+            {
+                payload,
+            };
+
+            foreach (var property in logEvent.Properties)
+            {
+                if (payloadSize >= MaximumPayloadLengthChars)
+                {
+                    break;
+                }
+
+                var value = property.Value.ToString();
+                var valueLength = Math.Min(value.Length, MaximumPayloadLengthChars - payloadSize);
+                parameters.Add(value.Substring(0, valueLength));
+                payloadSize += valueLength;
+            }
+
+            _log.WriteEvent(eventInstance, parameters.ToArray());
         }
 
         static EventLogEntryType LevelToEventLogEntryType(LogEventLevel logEventLevel)
