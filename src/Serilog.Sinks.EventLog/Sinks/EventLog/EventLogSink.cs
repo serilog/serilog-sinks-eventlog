@@ -31,7 +31,7 @@ namespace Serilog.Sinks.EventLog
     public class EventLogSink : ILogEventSink
     {
         const string ApplicationLogName = "Application";
-        const int MaximumPayloadLengthChars = 31839;
+        const int MaximumPayloadLengthChars = 31639;
         const int MaximumSourceNameLengthChars = 212;
         const int SourceMovedEventId = 3;
 
@@ -160,12 +160,25 @@ namespace Serilog.Sinks.EventLog
                 payload = payload.Substring(0, MaximumPayloadLengthChars);
             }
 
+            var payloadSize = payload.Length;
             var eventInstance = new EventInstance(_eventIdProvider.ComputeEventId(logEvent), 0, type);
             var parameters = new List<object>()
             {
                 payload,
             };
-            parameters.AddRange(logEvent.Properties.Values.Select(x => x.ToString()));
+
+            foreach (var property in logEvent.Properties)
+            {
+                if (payloadSize >= MaximumPayloadLengthChars)
+                {
+                    break;
+                }
+
+                var value = property.Value.ToString();
+                var valueLength = Math.Min(value.Length, MaximumPayloadLengthChars - payloadSize);
+                parameters.Add(value.Substring(0, valueLength));
+                payloadSize += valueLength;
+            }
 
             _log.WriteEvent(eventInstance, parameters.ToArray());
         }
