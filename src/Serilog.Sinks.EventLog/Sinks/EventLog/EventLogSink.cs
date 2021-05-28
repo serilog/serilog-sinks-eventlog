@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Diagnostics;
-using System.IO;
 using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Formatting;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace Serilog.Sinks.EventLog
 {
@@ -158,7 +160,14 @@ namespace Serilog.Sinks.EventLog
                 payload = payload.Substring(0, MaximumPayloadLengthChars);
             }
 
-            _log.WriteEntry(payload, type, _eventIdProvider.ComputeEventId(logEvent));
+            var eventInstance = new EventInstance(_eventIdProvider.ComputeEventId(logEvent), 0, type);
+            var parameters = new List<object>()
+            {
+                payload,
+            };
+            parameters.AddRange(logEvent.Properties.Values.Select(x => x.ToString()));
+
+            _log.WriteEvent(eventInstance, parameters.ToArray());
         }
 
         static EventLogEntryType LevelToEventLogEntryType(LogEventLevel logEventLevel)
