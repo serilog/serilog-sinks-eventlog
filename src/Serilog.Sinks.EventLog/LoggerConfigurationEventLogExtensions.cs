@@ -62,12 +62,10 @@ namespace Serilog
                 throw new ArgumentNullException(nameof(loggerConfiguration));
             }
 
-
 #if NETSTANDARD2_0
-            // Verify the code is running on Windows.
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                throw new PlatformNotSupportedException(RuntimeInformation.OSDescription);
+                return loggerConfiguration.Sink<NullSink>(restrictedToMinimumLevel);
             }
 #endif
             var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
@@ -109,6 +107,13 @@ namespace Serilog
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
+
+#if NETSTANDARD2_0
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return loggerConfiguration.Sink<NullSink>(restrictedToMinimumLevel);
+            }
+#endif
 
             if (eventIdProvider == null)
             {
