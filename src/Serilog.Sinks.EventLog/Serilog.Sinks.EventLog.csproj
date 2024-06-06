@@ -7,7 +7,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <VersionPrefix>3.1.0</VersionPrefix>
     <Authors>Jeremy Clarke;Fabian Wetzel</Authors>
-    <TargetFrameworks>net45;netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>net471;net462;net8.0;net6.0;netstandard2.0</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Serilog.Sinks.EventLog</AssemblyName>
@@ -25,17 +25,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Serilog" Version="2.3.0" />
+    <PackageReference Include="Serilog" Version="4.0.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="System.Diagnostics.EventLog">
-      <Version>4.5.0</Version>
-    </PackageReference>
+  <ItemGroup Condition="$(TargetFrameworkIdentifier) != '.NETFramework'">
+    <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
 </Project>
