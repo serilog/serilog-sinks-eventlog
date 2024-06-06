@@ -29,7 +29,7 @@ namespace Serilog.Sinks.EventLog
     public class EventLogSink : ILogEventSink
     {
         const string ApplicationLogName = "Application";
-        const int MaximumPayloadLengthChars = 31839;
+        const int MaximumPayloadLengthChars = 31_718;
         const int MaximumSourceNameLengthChars = 212;
         const int SourceMovedEventId = 3;
 
@@ -65,7 +65,8 @@ namespace Serilog.Sinks.EventLog
             if (textFormatter == null) throw new ArgumentNullException(nameof(textFormatter));
             if (eventIdProvider == null) throw new ArgumentNullException(nameof(eventIdProvider));
 
-            // The source is limitted in length and allowed chars, see: https://msdn.microsoft.com/en-us/library/e29k5ebc%28v=vs.110%29.aspx
+            // The source is limited in length and allowed chars, see: https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.eventlog.writeentry
+            // This documentation says 31839 bytes is the maximum, but it was found empirically that the maximum is actually 31718 on Windows 10.
             if (source.Length > MaximumSourceNameLengthChars)
             {
                 SelfLog.WriteLine("Trimming long event log source name to {0} characters", MaximumSourceNameLengthChars);
