@@ -58,11 +58,13 @@ public static class LoggerConfigurationEventLogExtensions
         LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
         IEventIdProvider? eventIdProvider = null)
     {
+#if FEATURE_RUNTIMEINFORMATION
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             // The check is performed programmatically because JSON configuration won't observe `SupportedOSPlatformAttribute`.
             throw new PlatformNotSupportedException(RuntimeInformation.OSDescription);
         }
+#endif
 
         if (loggerConfiguration == null)
         {
@@ -109,11 +111,13 @@ public static class LoggerConfigurationEventLogExtensions
         LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
         IEventIdProvider? eventIdProvider = null)
     {
+#if FEATURE_RUNTIMEINFORMATION
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             // The check is performed programmatically because JSON configuration won't observe `SupportedOSPlatformAttribute`.
             throw new PlatformNotSupportedException(RuntimeInformation.OSDescription);
         }
+#endif
 
         if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
         if (formatter == null) throw new ArgumentNullException(nameof(formatter));
