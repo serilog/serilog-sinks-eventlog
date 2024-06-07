@@ -151,10 +151,10 @@ namespace Serilog.Sinks.EventLog.Tests
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
-            log.Information("This is a normal mesage with a {Guid} in log {CUSTOM_LOG_NAME}", guid, CustomLogName);
+            log.Information("This is a normal message with a {Guid} in log {CUSTOM_LOG_NAME}", guid, CustomLogName);
 
             Assert.True(EventLogMessageWithSpecificBodyExists(guid, CustomLogName),
-                "The message was not found in the eventlog.");
+                "The message was not found in the event log.");
         }
 
         [Fact]
@@ -170,14 +170,14 @@ namespace Serilog.Sinks.EventLog.Tests
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
-            log.Information("This is a normal mesage with a {Guid} in log {customLogName}", guid, CustomLogName);
+            log.Information("This is a normal message with a {Guid} in log {customLogName}", guid, CustomLogName);
 
             if (!EventLogMessageWithSpecificBodyExists(guid, "Application"))
-                Assert.True(EventLogMessageWithSpecificBodyExists(guid, CustomLogName), "The message was not found in either the original or new eventlog.");
+                Assert.True(EventLogMessageWithSpecificBodyExists(guid, CustomLogName), "The message was not found in either the original or new event log.");
 
 
             Assert.True(EventLogMessageWithSpecificBodyExists(source, CustomLogName),
-                "The message was not found in target eventlog.");
+                "The message was not found in target event log.");
 
             System.Diagnostics.EventLog.DeleteEventSource(source);
         }
@@ -195,13 +195,13 @@ namespace Serilog.Sinks.EventLog.Tests
             log.Information(CustomEventIdProvider.MessageWithKnownId, knownIdGuid);
 
             Assert.True(EventLogMessageWithSpecificBodyAndEventIdExists(knownIdGuid, CustomEventIdProvider.MessageWithKnownIdEventId),
-                "The message was with known eventid not found in target eventlog.");
+                "The message was with known event id not found in target event log.");
 
             var unknownIdGuid = Guid.NewGuid().ToString("D");
             log.Information("unknown message {Guid}", unknownIdGuid);
 
             Assert.True(EventLogMessageWithSpecificBodyAndEventIdExists(unknownIdGuid, CustomEventIdProvider.UnknownEventId),
-                "The message was with unknown eventid not found in target eventlog.");
+                "The message was with unknown event id not found in target event log.");
         }
 
         static bool EventLogMessageWithSpecificBodyAndEventIdExists(string partOfBody, int eventId)

@@ -1,8 +1,7 @@
 ﻿<settings>
   <Serilog>
-    <Using Name="EventLogAssembly">Serilog.Sinks.EventLog</Using>
+    <Using EventLog="Serilog.Sinks.EventLog"/>
     <WriteTo Name="EventLog">
-      <Name>EventLog</Name>
       <Args source="EventLogSinkTests"
             formatter="Serilog.Formatting.Json.JsonFormatter, Serilog"
             manageEventSource="true" />
