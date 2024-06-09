@@ -4,14 +4,14 @@
 
 A Serilog sink that writes events to the Windows Event Log.
 
-**Important:** version 3.0 of this sink changed the default value of `manageEventSource` from `true` to `false`. Applications that run with administrative priviliges, and that can therefore create event sources on-the-fly, can opt-in by providing `manageEventSource: true` as a configuration option.
+**Important:** version 3.0 of this sink changed the default value of `manageEventSource` from `true` to `false`. Applications that run with administrative privileges, and that can therefore create event sources on-the-fly, can opt in by providing `manageEventSource: true` as a configuration option.
 
 ### Getting started
 
 First, install the package from NuGet:
 
 ```
-Install-Package Serilog.Sinks.EventLog
+dotnet add package Serilog.Sinks.EventLog
 ```
 
 The sink is configured by calling `WriteTo.EventLog()` on the `LoggerConfiguration`:

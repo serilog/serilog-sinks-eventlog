@@ -15,49 +15,48 @@
 using Serilog.Events;
 using System;
 
-namespace Serilog.Sinks.EventLog
+namespace Serilog.Sinks.EventLog;
+
+/// <summary>
+/// Hash functions for message templates. See <see cref="Compute(string)"/>.
+/// </summary>
+sealed class EventIdHashProvider : IEventIdProvider
 {
     /// <summary>
-    /// Hash functions for message templates. See <see cref="Compute(string)"/>.
+    /// Computes an Event Id for the given log event.
     /// </summary>
-    sealed class EventIdHashProvider : IEventIdProvider
+    /// <param name="logEvent">The log event to compute the event id from.</param>
+    /// <returns>Computed event id based off the given log.</returns>
+    public ushort ComputeEventId(LogEvent logEvent) => (ushort)Compute(logEvent.MessageTemplate.Text);
+
+    /// <summary>
+    /// Compute a 32-bit hash of the provided <paramref name="messageTemplate"/>. The
+    /// resulting hash value can be uses as an event id in lieu of transmitting the
+    /// full template string.
+    /// </summary>
+    /// <param name="messageTemplate">A message template.</param>
+    /// <returns>A 32-bit hash of the template.</returns>
+    static int Compute(string messageTemplate)
     {
-        /// <summary>
-        /// Computes an Event Id for the given log event.
-        /// </summary>
-        /// <param name="logEvent">The log event to compute the event id from.</param>
-        /// <returns>Computed event id based off the given log.</returns>
-        public ushort ComputeEventId(LogEvent logEvent) => (ushort)Compute(logEvent.MessageTemplate.Text);
+        if (messageTemplate == null) throw new ArgumentNullException(nameof(messageTemplate));
 
-        /// <summary>
-        /// Compute a 32-bit hash of the provided <paramref name="messageTemplate"/>. The
-        /// resulting hash value can be uses as an event id in lieu of transmitting the
-        /// full template string.
-        /// </summary>
-        /// <param name="messageTemplate">A message template.</param>
-        /// <returns>A 32-bit hash of the template.</returns>
-        static int Compute(string messageTemplate)
+        // Jenkins one-at-a-time https://en.wikipedia.org/wiki/Jenkins_hash_function
+        unchecked
         {
-            if (messageTemplate == null) throw new ArgumentNullException(nameof(messageTemplate));
-
-            // Jenkins one-at-a-time https://en.wikipedia.org/wiki/Jenkins_hash_function
-            unchecked
+            uint hash = 0;
+            for (var i = 0; i < messageTemplate.Length; ++i)
             {
-                uint hash = 0;
-                for (var i = 0; i < messageTemplate.Length; ++i)
-                {
-                    hash += messageTemplate[i];
-                    hash += (hash << 10);
-                    hash ^= (hash >> 6);
-                }
-                hash += (hash << 3);
-                hash ^= (hash >> 11);
-                hash += (hash << 15);
-
-                //even though the api is type int, eventID must be between 0 and 65535
-                //https://msdn.microsoft.com/en-us/library/d3159s0c(v=vs.110).aspx
-                return (ushort) hash;
+                hash += messageTemplate[i];
+                hash += (hash << 10);
+                hash ^= (hash >> 6);
             }
+            hash += (hash << 3);
+            hash ^= (hash >> 11);
+            hash += (hash << 15);
+
+            //even though the api is type int, eventID must be between 0 and 65535
+            //https://msdn.microsoft.com/en-us/library/d3159s0c(v=vs.110).aspx
+            return (ushort) hash;
         }
     }
 }
