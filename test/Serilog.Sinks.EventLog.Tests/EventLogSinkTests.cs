@@ -1,24 +1,22 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using NUnit.Framework;
 using Serilog.Formatting.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Configuration;
-using System.IO;
 using Serilog.Events;
+using Xunit;
 
 #pragma warning disable Serilog004 // Allow non-constant message templates
 
 namespace Serilog.Sinks.EventLog.Tests
 {
-    [TestFixture]
     public class EventLogSinkTests
     {
         const string CustomLogName = "serilog-eventlog-sink";
         const string EventLogSource = "EventLogSinkTests";
 
-        [Test]
+        [Fact]
         public void EmittingJsonFormattedEventsWorks()
         {
             var log = new LoggerConfiguration()
@@ -28,12 +26,12 @@ namespace Serilog.Sinks.EventLog.Tests
             var message = $"This is a JSON message with a {Guid.NewGuid():D}";
             log.Information(message);
             var messageFromLogEvent = EventLogMessageWithSpecificBody(message);
-            Assert.IsNotNull(messageFromLogEvent, "The message was not found in the eventlog.");
+            Assert.NotNull(messageFromLogEvent);
             AssertJsonCarriesMessageTemplate(messageFromLogEvent, message);
         }
 
 
-        [Test]
+        [Fact]
         public void EmittingJsonFormattedEventsFromAppSettingsWorks()
         {
             var log = new LoggerConfiguration()
@@ -47,18 +45,18 @@ namespace Serilog.Sinks.EventLog.Tests
             var message = $"This is a JSON message with a {Guid.NewGuid():D}";
             log.Information(message);
             var messageFromLogEvent = EventLogMessageWithSpecificBody(message);
-            Assert.IsNotNull(messageFromLogEvent, "The message was not found in the eventlog.");
+            Assert.NotNull(messageFromLogEvent);
             AssertJsonCarriesMessageTemplate(messageFromLogEvent, message);
 
         }
 
-        void AssertJsonCarriesMessageTemplate(string json, string messageTemplate)
+        static void AssertJsonCarriesMessageTemplate(string json, string messageTemplate)
         {
             var jsonObject = JObject.Parse(json);
-            Assert.AreEqual(messageTemplate, (string)jsonObject["MessageTemplate"]);
+            Assert.Equal(messageTemplate, (string)jsonObject["MessageTemplate"]);
         }
 
-        [Test]
+        [Fact]
         public void EmittingNormalEventsWorks()
         {
             var log = new LoggerConfiguration()
@@ -66,12 +64,12 @@ namespace Serilog.Sinks.EventLog.Tests
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
-            log.Information("This is a normal mesage with a {Guid}", guid);
-            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid),
-                "The message was not found in the eventlog.");
+            log.Information("This is a normal message with a {Guid}", guid);
+            Assert.True(EventLogMessageWithSpecificBodyExists(guid),
+                "The message was not found in the event log.");
         }
 
-        [Test]
+        [Fact]
         public void UsingAngleBracketsInSourceWorks()
         {
             var log = new LoggerConfiguration()
@@ -79,13 +77,13 @@ namespace Serilog.Sinks.EventLog.Tests
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
-            log.Information("This is a normal mesage with a {Guid}", guid);
+            log.Information("This is a normal message with a {Guid}", guid);
 
-            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid),
-                "The message was not found in the eventlog.");
+            Assert.True(EventLogMessageWithSpecificBodyExists(guid),
+                "The message was not found in the event log.");
         }
 
-        [Test]
+        [Fact]
         public void UsingSuperLongSourceNamesAreCorrectlyTrimmed()
         {
             for (var i = 199; i < 270; i+=10)
@@ -95,13 +93,13 @@ namespace Serilog.Sinks.EventLog.Tests
                     .CreateLogger();
 
                 var guid = Guid.NewGuid().ToString("D");
-                log.Information("This is a mesage with a {Guid}, source had length {length}", guid, i);
+                log.Information("This is a message with a {Guid}, source had length {length}", guid, i);
 
-                Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid), "The message was not found in the eventlog. SourceLength was " + i);
+                Assert.True(EventLogMessageWithSpecificBodyExists(guid), "The message was not found in the event log. SourceLength was " + i);
             }
         }
 
-        [Test]
+        [Fact]
         public void UsingSuperLongLogMessageWorks()
         {
             var charcounts = new[]
@@ -124,11 +122,11 @@ namespace Serilog.Sinks.EventLog.Tests
                     , charcount
                     , new string('x', charcount));
 
-                Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid), "The message was not found in the eventlog. Charcount was " + charcount);
+                Assert.True(EventLogMessageWithSpecificBodyExists(guid), "The message was not found in the event log. Char count was " + charcount);
             }
         }
 
-        [Test]
+        [Fact]
         public void UsingSpecialCharsWorks()
         {
             var log = new LoggerConfiguration()
@@ -136,30 +134,30 @@ namespace Serilog.Sinks.EventLog.Tests
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
-            log.Information("This is a mesage with a {Guid} and a special char {char}", guid, "%1");
+            log.Information("This is a message with a {Guid} and a special char {char}", guid, "%1");
 
-            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid), "The message was not found in the eventlog.");
+            Assert.True(EventLogMessageWithSpecificBodyExists(guid), "The message was not found in the event log.");
         }
 
-        [Test]
+        [Fact]
         public void UsingCustomEventLogWorks()
         {
             var log = new LoggerConfiguration()
                 .WriteTo.EventLog(
                     //can't use same source in different log
                     source: $"{EventLogSource}-{CustomLogName}",
-                    logName: CustomLogName, 
+                    logName: CustomLogName,
                     manageEventSource: true)
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
-            log.Information("This is a normal mesage with a {Guid} in log {CUSTOM_LOG_NAME}", guid, CustomLogName);
+            log.Information("This is a normal message with a {Guid} in log {CUSTOM_LOG_NAME}", guid, CustomLogName);
 
-            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid, CustomLogName),
-                "The message was not found in the eventlog.");
+            Assert.True(EventLogMessageWithSpecificBodyExists(guid, CustomLogName),
+                "The message was not found in the event log.");
         }
 
-        [Test]
+        [Fact]
         public void UsingExistingSourceInCustomEventLogLogsRestartWarningAndLogsToApplicationLog()
         {
             var source = Guid.NewGuid().ToString("D");
@@ -172,59 +170,56 @@ namespace Serilog.Sinks.EventLog.Tests
                 .CreateLogger();
 
             var guid = Guid.NewGuid().ToString("D");
-            log.Information("This is a normal mesage with a {Guid} in log {customLogName}", guid, CustomLogName);
+            log.Information("This is a normal message with a {Guid} in log {customLogName}", guid, CustomLogName);
 
             if (!EventLogMessageWithSpecificBodyExists(guid, "Application"))
-                Assert.IsTrue(EventLogMessageWithSpecificBodyExists(guid, CustomLogName), "The message was not found in either the original or new eventlog.");
+                Assert.True(EventLogMessageWithSpecificBodyExists(guid, CustomLogName), "The message was not found in either the original or new event log.");
 
 
-            Assert.IsTrue(EventLogMessageWithSpecificBodyExists(source, CustomLogName),
-                "The message was not found in target eventlog.");
+            Assert.True(EventLogMessageWithSpecificBodyExists(source, CustomLogName),
+                "The message was not found in target event log.");
 
             System.Diagnostics.EventLog.DeleteEventSource(source);
         }
 
-        [Test]
+        [Fact]
         public void UsingCustomEventIdProviderLogsMessagesWithSuppliedEventId()
         {
             var log = new LoggerConfiguration()
                 .WriteTo.EventLog(EventLogSource, manageEventSource: true, eventIdProvider: new CustomEventIdProvider())
                 .CreateLogger();
 
-            Assert.AreNotEqual(CustomEventIdProvider.MessageWithKnownIdEventId, CustomEventIdProvider.UnknownEventId);
+            Assert.NotEqual(CustomEventIdProvider.MessageWithKnownIdEventId, CustomEventIdProvider.UnknownEventId);
 
             var knownIdGuid = Guid.NewGuid().ToString("D");
             log.Information(CustomEventIdProvider.MessageWithKnownId, knownIdGuid);
 
-            Assert.IsTrue(EventLogMessageWithSpecificBodyAndEventIdExists(knownIdGuid, CustomEventIdProvider.MessageWithKnownIdEventId),
-                "The message was with known eventid not found in target eventlog.");
+            Assert.True(EventLogMessageWithSpecificBodyAndEventIdExists(knownIdGuid, CustomEventIdProvider.MessageWithKnownIdEventId),
+                "The message was with known event id not found in target event log.");
 
             var unknownIdGuid = Guid.NewGuid().ToString("D");
             log.Information("unknown message {Guid}", unknownIdGuid);
 
-            Assert.IsTrue(EventLogMessageWithSpecificBodyAndEventIdExists(unknownIdGuid, CustomEventIdProvider.UnknownEventId),
-                "The message was with unknown eventid not found in target eventlog.");
+            Assert.True(EventLogMessageWithSpecificBodyAndEventIdExists(unknownIdGuid, CustomEventIdProvider.UnknownEventId),
+                "The message was with unknown event id not found in target event log.");
         }
 
-        bool EventLogMessageWithSpecificBodyAndEventIdExists(string partOfBody, int eventId)
+        static bool EventLogMessageWithSpecificBodyAndEventIdExists(string partOfBody, int eventId)
         {
             return ApplicationLog
                 .Entries
                 .Cast<EventLogEntry>()
-                .Any(entry =>
-                {
-                    return entry.InstanceId == eventId
-                        && entry.Message.Contains(partOfBody);
-                });
+                .Any(entry => entry.InstanceId == eventId
+                              && entry.Message.Contains(partOfBody));
         }
 
-        bool EventLogMessageWithSpecificBodyExists(string partOfBody, string logName = "")
+        static bool EventLogMessageWithSpecificBodyExists(string partOfBody, string logName = "")
         {
             var log = string.IsNullOrWhiteSpace(logName) ? ApplicationLog : GetLog(logName);
             return log.Entries.Cast<EventLogEntry>().Any(entry => entry.Message.Contains(partOfBody));
         }
 
-        string EventLogMessageWithSpecificBody(string partOfBody)
+        static string EventLogMessageWithSpecificBody(string partOfBody)
         {
             return ApplicationLog.Entries.Cast<EventLogEntry>().FirstOrDefault(entry => entry.Message.Contains(partOfBody))?.Message;
         }
@@ -233,10 +228,10 @@ namespace Serilog.Sinks.EventLog.Tests
 
         static System.Diagnostics.EventLog GetLog(string logName)
         {
-            var evemtlog = System.Diagnostics.EventLog.GetEventLogs().FirstOrDefault(log => log.Log == logName);
-            if (evemtlog == null)
+            var eventLog = System.Diagnostics.EventLog.GetEventLogs().FirstOrDefault(log => log.Log == logName);
+            if (eventLog == null)
                 throw new Exception($"Cannot find log \"{logName}\"");
-            return evemtlog;
+            return eventLog;
         }
 
         sealed class CustomEventIdProvider : IEventIdProvider
@@ -248,10 +243,7 @@ namespace Serilog.Sinks.EventLog.Tests
 
             public ushort ComputeEventId(LogEvent logEvent)
             {
-                if (string.Equals(logEvent.MessageTemplate.Text, MessageWithKnownId))
-                    return MessageWithKnownIdEventId;
-
-                return UnknownEventId;
+                return string.Equals(logEvent.MessageTemplate.Text, MessageWithKnownId) ? MessageWithKnownIdEventId : UnknownEventId;
             }
         }
     }

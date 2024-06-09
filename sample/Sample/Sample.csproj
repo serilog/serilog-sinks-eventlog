@@ -1,22 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net452;net461;netcoreapp2.0;</TargetFrameworks>
-    <AssemblyName>Sample</AssemblyName>
+    <TargetFrameworks>net48;net6.0;net8.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
-    <PackageId>Sample</PackageId>
+    <NoWarn>CA1416</NoWarn>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Serilog.Sinks.EventLog\Serilog.Sinks.EventLog.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Serilog" Version="2.3.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 </Project>
