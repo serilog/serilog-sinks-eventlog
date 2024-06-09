@@ -61,8 +61,7 @@ public static class LoggerConfigurationEventLogExtensions
 #if FEATURE_RUNTIMEINFORMATION
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            // The check is performed programmatically because JSON configuration won't observe `SupportedOSPlatformAttribute`.
-            throw new PlatformNotSupportedException(RuntimeInformation.OSDescription);
+            return loggerConfiguration.Sink<NullSink>(restrictedToMinimumLevel);
         }
 #endif
 
@@ -114,11 +113,9 @@ public static class LoggerConfigurationEventLogExtensions
 #if FEATURE_RUNTIMEINFORMATION
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            // The check is performed programmatically because JSON configuration won't observe `SupportedOSPlatformAttribute`.
-            throw new PlatformNotSupportedException(RuntimeInformation.OSDescription);
+            return loggerConfiguration.Sink<NullSink>(restrictedToMinimumLevel);
         }
 #endif
-
         if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
         if (formatter == null) throw new ArgumentNullException(nameof(formatter));
 
