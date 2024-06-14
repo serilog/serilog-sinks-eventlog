@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>Serilog event sink that writes to the Windows Event Log.</Description>
         <Copyright>Copyright © Serilog Contributors</Copyright>
-        <VersionPrefix>4.0.0</VersionPrefix>
+        <VersionPrefix>4.0.1</VersionPrefix>
         <AssemblyVersion>4.0.0.0</AssemblyVersion>
         <Authors>Jeremy Clarke;Fabian Wetzel</Authors>
         <!-- .NET Framework version targeting is frozen at these two TFMs. -->
