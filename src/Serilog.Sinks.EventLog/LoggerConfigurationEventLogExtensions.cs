@@ -13,14 +13,15 @@
 // limitations under the License.
 
 using System;
-using System.Runtime.Versioning;
 using Serilog.Configuration;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 using Serilog.Sinks.EventLog;
 using Serilog.Formatting;
 
-[assembly: SupportedOSPlatform("windows")]
+#if NET5_0_OR_GREATER
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
 
 namespace Serilog;
 

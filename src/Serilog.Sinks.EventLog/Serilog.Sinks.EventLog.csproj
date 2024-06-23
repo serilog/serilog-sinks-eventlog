@@ -30,7 +30,7 @@
 
     <ItemGroup>
         <PackageReference Include="Serilog" Version="4.0.0"/>
-        <PackageReference Include="Polyfill" Version="5.5.3" PrivateAssets="all"/>
+        <PackageReference Include="PolySharp" Version="1.14.1" PrivateAssets="all"/>
     </ItemGroup>
 
     <ItemGroup Condition="$(TargetFrameworkIdentifier) != '.NETFramework'">
