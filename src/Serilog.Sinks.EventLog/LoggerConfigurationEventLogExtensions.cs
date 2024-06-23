@@ -13,14 +13,14 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Versioning;
 using Serilog.Configuration;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 using Serilog.Sinks.EventLog;
 using Serilog.Formatting;
-using System.Runtime.InteropServices;
 
-[assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
+[assembly: SupportedOSPlatform("windows")]
 
 namespace Serilog;
 
@@ -56,7 +56,7 @@ public static class LoggerConfigurationEventLogExtensions
         LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
         IEventIdProvider? eventIdProvider = null)
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (!IsWindows())
         {
             return loggerConfiguration.Sink<NullSink>(restrictedToMinimumLevel);
         }
@@ -103,7 +103,7 @@ public static class LoggerConfigurationEventLogExtensions
         LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
         IEventIdProvider? eventIdProvider = null)
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (!IsWindows())
         {
             return loggerConfiguration.Sink<NullSink>(restrictedToMinimumLevel);
         }
@@ -117,5 +117,16 @@ public static class LoggerConfigurationEventLogExtensions
         }
 
         return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider), restrictedToMinimumLevel);
+    }
+
+    private static bool IsWindows()
+    {
+#if NET5_0_OR_GREATER
+        return OperatingSystem.IsWindows();
+#elif NET46X
+        return true;
+#else
+        return System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
+#endif
     }
 }
