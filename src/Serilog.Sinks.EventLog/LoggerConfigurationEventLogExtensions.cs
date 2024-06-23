@@ -124,7 +124,7 @@ public static class LoggerConfigurationEventLogExtensions
     {
 #if NET5_0_OR_GREATER
         return OperatingSystem.IsWindows();
-#elif NET46X
+#elif NET462
         return true;
 #else
         return System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
