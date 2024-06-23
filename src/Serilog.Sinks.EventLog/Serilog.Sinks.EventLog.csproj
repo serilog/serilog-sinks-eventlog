@@ -22,7 +22,7 @@
         <PackageIcon>serilog-sink-nuget.png</PackageIcon>
         <PackageProjectUrl>https://serilog.net</PackageProjectUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <RepositoryUrl>https://github.com/serilog/serilog-sinks-eventlog</RepositoryUrl>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <LangVersion>12</LangVersion>
         <Nullable>enable</Nullable>
