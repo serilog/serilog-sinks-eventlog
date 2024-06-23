@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <Description>Serilog event sink that writes to the Windows Event Log.</Description>
@@ -15,18 +15,14 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageTags>serilog;logging;eventlog;event;log;viewer</PackageTags>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <RootNamespace>Serilog</RootNamespace>
         <AssemblyOriginatorKeyFile>../../assets/Serilog.snk</AssemblyOriginatorKeyFile>
         <SignAssembly>true</SignAssembly>
         <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-        <PackageTags>serilog;async</PackageTags>
         <PackageIcon>serilog-sink-nuget.png</PackageIcon>
         <PackageProjectUrl>https://serilog.net</PackageProjectUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <RepositoryUrl>https://github.com/serilog/serilog-sinks-async</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+        <RepositoryUrl>https://github.com/serilog/serilog-sinks-eventlog</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <LangVersion>12</LangVersion>
         <Nullable>enable</Nullable>
