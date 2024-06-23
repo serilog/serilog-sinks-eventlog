@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net48;net6.0-windows;net8.0-windows</TargetFrameworks>
     <OutputType>Exe</OutputType>
-    <NoWarn>CA1416</NoWarn>
     <LangVersion>12</LangVersion>
   </PropertyGroup>
 
