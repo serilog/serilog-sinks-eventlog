@@ -18,8 +18,10 @@ using Serilog.Events;
 using Serilog.Formatting.Display;
 using Serilog.Sinks.EventLog;
 using Serilog.Formatting;
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
+
+#if NET5_0_OR_GREATER
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
 
 namespace Serilog;
 
@@ -44,9 +46,6 @@ public static class LoggerConfigurationEventLogExtensions
     /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
     /// <returns>Logger configuration, allowing configuration to continue.</returns>
     /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
-#if FEATURE_SUPPORTEDOSPLATFORM
-    [SupportedOSPlatform("windows")]
-#endif
     public static LoggerConfiguration EventLog(
         this LoggerSinkConfiguration loggerConfiguration,
         string source,
@@ -58,12 +57,10 @@ public static class LoggerConfigurationEventLogExtensions
         LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
         IEventIdProvider? eventIdProvider = null)
     {
-#if FEATURE_RUNTIMEINFORMATION
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (!IsWindows())
         {
             return loggerConfiguration.Sink<NullSink>(restrictedToMinimumLevel);
         }
-#endif
 
         if (loggerConfiguration == null)
         {
@@ -97,9 +94,6 @@ public static class LoggerConfigurationEventLogExtensions
     /// </returns>
     /// <exception cref="System.ArgumentNullException">loggerConfiguration</exception>
     /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
-#if FEATURE_SUPPORTEDOSPLATFORM
-    [SupportedOSPlatform("windows")]
-#endif
     public static LoggerConfiguration EventLog(
         this LoggerSinkConfiguration loggerConfiguration,
         ITextFormatter formatter,
@@ -110,12 +104,11 @@ public static class LoggerConfigurationEventLogExtensions
         LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
         IEventIdProvider? eventIdProvider = null)
     {
-#if FEATURE_RUNTIMEINFORMATION
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (!IsWindows())
         {
             return loggerConfiguration.Sink<NullSink>(restrictedToMinimumLevel);
         }
-#endif
+
         if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
         if (formatter == null) throw new ArgumentNullException(nameof(formatter));
 
@@ -125,5 +118,16 @@ public static class LoggerConfigurationEventLogExtensions
         }
 
         return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider), restrictedToMinimumLevel);
+    }
+
+    private static bool IsWindows()
+    {
+#if NET5_0_OR_GREATER
+        return OperatingSystem.IsWindows();
+#elif NET462
+        return true;
+#else
+        return System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
+#endif
     }
 }

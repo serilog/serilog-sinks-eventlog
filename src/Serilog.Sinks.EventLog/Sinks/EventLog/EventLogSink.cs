@@ -15,7 +15,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.Versioning;
 using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
@@ -27,9 +26,6 @@ namespace Serilog.Sinks.EventLog;
 /// Writes log events as documents to the Windows event log.
 /// </summary>
 /// <remarks>Beware of changing the source/log name, see: http://stackoverflow.com/questions/804284/how-do-i-write-to-a-custom-windows-event-log?rq=1</remarks>
-#if FEATURE_SUPPORTEDOSPLATFORM
-[SupportedOSPlatform("windows")]
-#endif
 public class EventLogSink : ILogEventSink
 {
     const string ApplicationLogName = "Application";
