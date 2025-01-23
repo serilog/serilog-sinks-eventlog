@@ -1,4 +1,4 @@
-﻿// Copyright 2014 Serilog Contributors
+// Copyright 2014 Serilog Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ public static class LoggerConfigurationEventLogExtensions
     /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
     /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
     /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
+    /// <param name="categoryNumberProvider">Supplies categories for emitted log events.</param>
     /// <returns>Logger configuration, allowing configuration to continue.</returns>
     /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
     public static LoggerConfiguration EventLog(
@@ -55,7 +56,8 @@ public static class LoggerConfigurationEventLogExtensions
         string outputTemplate = DefaultOutputTemplate,
         IFormatProvider? formatProvider = null,
         LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
-        IEventIdProvider? eventIdProvider = null)
+        IEventIdProvider? eventIdProvider = null,
+        ICategoryNumberProvider? categoryNumberProvider = null)
     {
         if (!IsWindows())
         {
@@ -69,12 +71,7 @@ public static class LoggerConfigurationEventLogExtensions
 
         var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
 
-        if (eventIdProvider == null)
-        {
-            return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource), restrictedToMinimumLevel);
-        }
-
-        return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider), restrictedToMinimumLevel);
+        return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider, categoryNumberProvider), restrictedToMinimumLevel);
     }
 
     /// <summary>
@@ -89,6 +86,7 @@ public static class LoggerConfigurationEventLogExtensions
     /// <param name="formatter">Formatter to control how events are rendered into the file. To control
     /// plain text formatting, use the overload that accepts an output template instead.</param>
     /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
+    /// <param name="categoryNumberProvider">Supplies categories for emitted log events.</param>
     /// <returns>
     /// Logger configuration, allowing configuration to continue.
     /// </returns>
@@ -102,7 +100,8 @@ public static class LoggerConfigurationEventLogExtensions
         string machineName = ".",
         bool manageEventSource = false,
         LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
-        IEventIdProvider? eventIdProvider = null)
+        IEventIdProvider? eventIdProvider = null,
+        ICategoryNumberProvider? categoryNumberProvider = null)
     {
         if (!IsWindows())
         {
@@ -112,12 +111,7 @@ public static class LoggerConfigurationEventLogExtensions
         if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
         if (formatter == null) throw new ArgumentNullException(nameof(formatter));
 
-        if (eventIdProvider == null)
-        {
-            return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource), restrictedToMinimumLevel);
-        }
-
-        return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider), restrictedToMinimumLevel);
+        return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider, categoryNumberProvider), restrictedToMinimumLevel);
     }
 
     private static bool IsWindows()

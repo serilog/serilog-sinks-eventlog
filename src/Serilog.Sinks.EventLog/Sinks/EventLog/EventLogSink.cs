@@ -1,4 +1,4 @@
-﻿// Copyright 2014 Serilog Contributors
+// Copyright 2014 Serilog Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ public class EventLogSink : ILogEventSink
     const int SourceMovedEventId = 3;
 
     readonly IEventIdProvider _eventIdProvider;
+    readonly ICategoryNumberProvider _categoryNumberProvider;
     readonly ITextFormatter _textFormatter;
     readonly System.Diagnostics.EventLog _log;
 
@@ -45,37 +46,34 @@ public class EventLogSink : ILogEventSink
     /// <param name="textFormatter">Supplies culture-specific formatting information, or null.</param>
     /// <param name="machineName">The name of the machine hosting the event log written to.</param>
     /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
-    public EventLogSink(string source, string? logName, ITextFormatter textFormatter, string machineName, bool manageEventSource)
-        : this(source, logName, textFormatter, machineName, manageEventSource, new EventIdHashProvider())
-    {
-    }
-
-    /// <summary>
-    /// Construct a sink posting to the Windows event log, creating the specified <paramref name="source"/> if it does not exist.
-    /// </summary>
-    /// <param name="source">The source name by which the application is registered on the local computer. </param>
-    /// <param name="logName">The name of the log the source's entries are written to. Possible values include Application, System, or a custom event log.</param>
-    /// <param name="textFormatter">Supplies culture-specific formatting information, or null.</param>
-    /// <param name="machineName">The name of the machine hosting the event log written to.</param>
-    /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
     /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
-    public EventLogSink(string source, string? logName, ITextFormatter textFormatter, string machineName, bool manageEventSource, IEventIdProvider eventIdProvider)
+    /// <param name="categoryNumberProvider">Supplies category numbers for emitted log events.</param>
+    public EventLogSink(string source, string? logName, ITextFormatter textFormatter, string machineName, bool manageEventSource, IEventIdProvider? eventIdProvider = null, ICategoryNumberProvider? categoryNumberProvider = null)
     {
         if (source == null) throw new ArgumentNullException(nameof(source));
         if (textFormatter == null) throw new ArgumentNullException(nameof(textFormatter));
-        if (eventIdProvider == null) throw new ArgumentNullException(nameof(eventIdProvider));
+        if (eventIdProvider == null)
+        {
+            eventIdProvider = new EventIdHashProvider();
+        }
+        if (categoryNumberProvider == null)
+        {
+            categoryNumberProvider = new NullCategoryNumberProvider();
+        }
+
 
         // The source is limited in length and allowed chars, see: https://msdn.microsoft.com/en-us/library/e29k5ebc%28v=vs.110%29.aspx
         if (source.Length > MaximumSourceNameLengthChars)
         {
             SelfLog.WriteLine("Trimming long event log source name to {0} characters", MaximumSourceNameLengthChars);
-            source = source.Substring(0, MaximumSourceNameLengthChars);
+            source = source[..MaximumSourceNameLengthChars];
         }
 
         source = source.Replace("<", "_");
         source = source.Replace(">", "_");
 
         _eventIdProvider = eventIdProvider;
+        _categoryNumberProvider = categoryNumberProvider;
         _textFormatter = textFormatter;
         _log = new System.Diagnostics.EventLog(string.IsNullOrWhiteSpace(logName) ? ApplicationLogName : logName, machineName);
 
@@ -155,10 +153,10 @@ public class EventLogSink : ILogEventSink
         if (payload.Length > MaximumPayloadLengthChars)
         {
             SelfLog.WriteLine("Trimming long event log entry payload to {0} characters", MaximumPayloadLengthChars);
-            payload = payload.Substring(0, MaximumPayloadLengthChars);
+            payload = payload[..MaximumPayloadLengthChars];
         }
 
-        _log.WriteEntry(payload, type, _eventIdProvider.ComputeEventId(logEvent));
+        _log.WriteEntry(payload, type, _eventIdProvider.ComputeEventId(logEvent), category: _categoryNumberProvider.ComputeCategoryNumber(logEvent));
     }
 
     static EventLogEntryType LevelToEventLogEntryType(LogEventLevel logEventLevel)

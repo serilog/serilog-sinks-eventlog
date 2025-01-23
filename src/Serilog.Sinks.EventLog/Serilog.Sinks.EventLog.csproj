@@ -29,8 +29,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Serilog" Version="4.0.0"/>
-        <PackageReference Include="PolySharp" Version="1.14.1" PrivateAssets="all"/>
+        <PackageReference Include="Serilog" Version="4.0.0" />
+        <PackageReference Include="PolySharp" Version="1.14.1" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup Condition="$(TargetFrameworkIdentifier) != '.NETFramework'">
@@ -38,8 +38,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\..\assets\serilog-sink-nuget.png" Pack="true" Visible="false" PackagePath="/"/>
-        <None Include="..\..\README.md" Pack="true" Visible="false" PackagePath="/"/>
+        <None Include="..\..\assets\serilog-sink-nuget.png" Pack="true" Visible="false" PackagePath="/" />
+        <None Include="..\..\README.md" Pack="true" Visible="false" PackagePath="/" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Properties\PublishProfiles\" />
     </ItemGroup>
 
 </Project>
