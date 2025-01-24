@@ -44,7 +44,7 @@ public static class LoggerConfigurationEventLogExtensions
     /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
     /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
     /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
-    /// <param name="categoryNumberProvider">Supplies categories for emitted log events.</param>
+    /// <param name="categoryProvider">Supplies categories for emitted log events.</param>
     /// <returns>Logger configuration, allowing configuration to continue.</returns>
     /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
     public static LoggerConfiguration EventLog(
@@ -57,7 +57,7 @@ public static class LoggerConfigurationEventLogExtensions
         IFormatProvider? formatProvider = null,
         LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
         IEventIdProvider? eventIdProvider = null,
-        ICategoryNumberProvider? categoryNumberProvider = null)
+        ICategoryProvider? categoryProvider = null)
     {
         if (!IsWindows())
         {
@@ -71,7 +71,7 @@ public static class LoggerConfigurationEventLogExtensions
 
         var formatter = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
 
-        return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider, categoryNumberProvider), restrictedToMinimumLevel);
+        return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider, categoryProvider), restrictedToMinimumLevel);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public static class LoggerConfigurationEventLogExtensions
     /// <param name="formatter">Formatter to control how events are rendered into the file. To control
     /// plain text formatting, use the overload that accepts an output template instead.</param>
     /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
-    /// <param name="categoryNumberProvider">Supplies categories for emitted log events.</param>
+    /// <param name="categoryProvider">Supplies categories for emitted log events.</param>
     /// <returns>
     /// Logger configuration, allowing configuration to continue.
     /// </returns>
@@ -101,7 +101,7 @@ public static class LoggerConfigurationEventLogExtensions
         bool manageEventSource = false,
         LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
         IEventIdProvider? eventIdProvider = null,
-        ICategoryNumberProvider? categoryNumberProvider = null)
+        ICategoryProvider? categoryProvider = null)
     {
         if (!IsWindows())
         {
@@ -111,7 +111,7 @@ public static class LoggerConfigurationEventLogExtensions
         if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
         if (formatter == null) throw new ArgumentNullException(nameof(formatter));
 
-        return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider, categoryNumberProvider), restrictedToMinimumLevel);
+        return loggerConfiguration.Sink(new EventLogSink(source, logName, formatter, machineName, manageEventSource, eventIdProvider, categoryProvider), restrictedToMinimumLevel);
     }
 
     private static bool IsWindows()

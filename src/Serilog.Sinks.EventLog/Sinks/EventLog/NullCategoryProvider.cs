@@ -1,4 +1,4 @@
-// Copyright 2016 Serilog Contributors
+// Copyright 2025 Serilog Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ namespace Serilog.Sinks.EventLog;
 /// <summary>
 /// Always returns 0 as category number
 /// </summary>
-sealed class NullCategoryNumberProvider : ICategoryNumberProvider
+sealed class NullCategoryProvider : ICategoryProvider
 {
-
-    public short ComputeCategoryNumber(LogEvent logEvent) => 0;
+    public short ComputeCategory(LogEvent logEvent) => 0;
 }

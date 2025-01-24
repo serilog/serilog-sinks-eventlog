@@ -34,7 +34,7 @@ public class EventLogSink : ILogEventSink
     const int SourceMovedEventId = 3;
 
     readonly IEventIdProvider _eventIdProvider;
-    readonly ICategoryNumberProvider _categoryNumberProvider;
+    readonly ICategoryProvider _categoryProvider;
     readonly ITextFormatter _textFormatter;
     readonly System.Diagnostics.EventLog _log;
 
@@ -47,20 +47,11 @@ public class EventLogSink : ILogEventSink
     /// <param name="machineName">The name of the machine hosting the event log written to.</param>
     /// <param name="manageEventSource">If false does not check/create event source.  Defaults to true i.e. allow sink to manage event source creation</param>
     /// <param name="eventIdProvider">Supplies event ids for emitted log events.</param>
-    /// <param name="categoryNumberProvider">Supplies category numbers for emitted log events.</param>
-    public EventLogSink(string source, string? logName, ITextFormatter textFormatter, string machineName, bool manageEventSource, IEventIdProvider? eventIdProvider = null, ICategoryNumberProvider? categoryNumberProvider = null)
+    /// <param name="categoryProvider">Supplies categories for emitted log events.</param>
+    public EventLogSink(string source, string? logName, ITextFormatter textFormatter, string machineName, bool manageEventSource, IEventIdProvider? eventIdProvider = null, ICategoryProvider? categoryProvider = null)
     {
         if (source == null) throw new ArgumentNullException(nameof(source));
         if (textFormatter == null) throw new ArgumentNullException(nameof(textFormatter));
-        if (eventIdProvider == null)
-        {
-            eventIdProvider = new EventIdHashProvider();
-        }
-        if (categoryNumberProvider == null)
-        {
-            categoryNumberProvider = new NullCategoryNumberProvider();
-        }
-
 
         // The source is limited in length and allowed chars, see: https://msdn.microsoft.com/en-us/library/e29k5ebc%28v=vs.110%29.aspx
         if (source.Length > MaximumSourceNameLengthChars)
@@ -72,8 +63,8 @@ public class EventLogSink : ILogEventSink
         source = source.Replace("<", "_");
         source = source.Replace(">", "_");
 
-        _eventIdProvider = eventIdProvider;
-        _categoryNumberProvider = categoryNumberProvider;
+        _eventIdProvider = eventIdProvider ?? new EventIdHashProvider();
+        _categoryProvider = categoryProvider ?? new NullCategoryProvider();
         _textFormatter = textFormatter;
         _log = new System.Diagnostics.EventLog(string.IsNullOrWhiteSpace(logName) ? ApplicationLogName : logName, machineName);
 
@@ -156,7 +147,7 @@ public class EventLogSink : ILogEventSink
             payload = payload[..MaximumPayloadLengthChars];
         }
 
-        _log.WriteEntry(payload, type, _eventIdProvider.ComputeEventId(logEvent), category: _categoryNumberProvider.ComputeCategoryNumber(logEvent));
+        _log.WriteEntry(payload, type, _eventIdProvider.ComputeEventId(logEvent), category: _categoryProvider.ComputeCategory(logEvent));
     }
 
     static EventLogEntryType LevelToEventLogEntryType(LogEventLevel logEventLevel)

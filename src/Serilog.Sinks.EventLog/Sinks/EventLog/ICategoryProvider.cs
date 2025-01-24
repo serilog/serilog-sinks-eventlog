@@ -1,4 +1,4 @@
-// Copyright 2016 Serilog Contributors
+// Copyright 2025 Serilog Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,15 +17,15 @@ using Serilog.Events;
 namespace Serilog.Sinks.EventLog
 {
     /// <summary>
-    /// Task category number provider for log events
+    /// Task category provider for log events
     /// </summary>
-    public interface ICategoryNumberProvider
+    public interface ICategoryProvider
     {
         /// <summary>
-        /// Computes an task category number for the given log event.
+        /// Computes an task category for the given log event.
         /// </summary>
-        /// <param name="logEvent">The log event to compute the task category number from.</param>
-        /// <returns>Computed task category number based off the given log.</returns>
-        short ComputeCategoryNumber(LogEvent logEvent);
+        /// <param name="logEvent">The log event to compute the task category from.</param>
+        /// <returns>Computed task category based off the given log.</returns>
+        short ComputeCategory(LogEvent logEvent);
     }
 }
