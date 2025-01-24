@@ -30,7 +30,6 @@ namespace Serilog.Sinks.EventLog.Tests
             AssertJsonCarriesMessageTemplate(messageFromLogEvent, message);
         }
 
-
         [Fact]
         public void EmittingJsonFormattedEventsFromAppSettingsWorks()
         {
