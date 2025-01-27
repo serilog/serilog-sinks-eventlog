@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using Serilog.Formatting.Json;
@@ -29,7 +29,6 @@ namespace Serilog.Sinks.EventLog.Tests
             Assert.NotNull(messageFromLogEvent);
             AssertJsonCarriesMessageTemplate(messageFromLogEvent, message);
         }
-
 
         [Fact]
         public void EmittingJsonFormattedEventsFromAppSettingsWorks()
@@ -204,12 +203,43 @@ namespace Serilog.Sinks.EventLog.Tests
                 "The message was with unknown event id not found in target event log.");
         }
 
+        [Fact]
+        public void UsingCustomCategoryProviderLogsMessagesWithSuppliedCategory()
+        {
+            var log = new LoggerConfiguration()
+                .WriteTo.EventLog(EventLogSource, manageEventSource: true, categoryProvider: new CustomCategoryNumberProvider())
+                .CreateLogger();
+
+            Assert.NotEqual(CustomCategoryNumberProvider.MessageWithKnownCategoryNumber, CustomCategoryNumberProvider.DefaultCategoryNumber);
+
+            var knownIdGuid = Guid.NewGuid().ToString("D");
+            log.Information(CustomCategoryNumberProvider.MessageWithKnownCategory, knownIdGuid);
+
+            Assert.True(EventLogMessageWithSpecificBodyAndCategoryExists(knownIdGuid, CustomCategoryNumberProvider.MessageWithKnownCategoryNumber),
+                "The message was with known category not found in target event log.");
+
+            var unknownIdGuid = Guid.NewGuid().ToString("D");
+            log.Information("unknown message {Guid}", unknownIdGuid);
+
+            Assert.True(EventLogMessageWithSpecificBodyAndCategoryExists(unknownIdGuid, CustomCategoryNumberProvider.DefaultCategoryNumber),
+                "The message was with default category not found in target event log.");
+        }
+
         static bool EventLogMessageWithSpecificBodyAndEventIdExists(string partOfBody, int eventId)
         {
             return ApplicationLog
                 .Entries
                 .Cast<EventLogEntry>()
                 .Any(entry => entry.InstanceId == eventId
+                              && entry.Message.Contains(partOfBody));
+        }
+
+        static bool EventLogMessageWithSpecificBodyAndCategoryExists(string partOfBody, short category)
+        {
+            return ApplicationLog
+                .Entries
+                .Cast<EventLogEntry>()
+                .Any(entry => entry.CategoryNumber == category
                               && entry.Message.Contains(partOfBody));
         }
 
@@ -244,6 +274,19 @@ namespace Serilog.Sinks.EventLog.Tests
             public ushort ComputeEventId(LogEvent logEvent)
             {
                 return string.Equals(logEvent.MessageTemplate.Text, MessageWithKnownId) ? MessageWithKnownIdEventId : UnknownEventId;
+            }
+        }
+
+        sealed class CustomCategoryNumberProvider : ICategoryProvider
+        {
+            public const short DefaultCategoryNumber = 1;
+
+            public const short MessageWithKnownCategoryNumber = 12;
+            public const string MessageWithKnownCategory = "Event {Guid} - this message has a known category";
+
+            public short ComputeCategory(LogEvent logEvent)
+            {
+                return string.Equals(logEvent.MessageTemplate.Text, MessageWithKnownCategory) ? MessageWithKnownCategoryNumber : DefaultCategoryNumber;
             }
         }
     }

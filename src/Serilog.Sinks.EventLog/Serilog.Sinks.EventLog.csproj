@@ -3,8 +3,8 @@
     <PropertyGroup>
         <Description>Serilog event sink that writes to the Windows Event Log.</Description>
         <Copyright>Copyright © Serilog Contributors</Copyright>
-        <VersionPrefix>4.0.1</VersionPrefix>
-        <AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <VersionPrefix>5.0.0</VersionPrefix>
+        <AssemblyVersion>5.0.0.0</AssemblyVersion>
         <Authors>Jeremy Clarke;Fabian Wetzel</Authors>
         <!-- .NET Framework version targeting is frozen at these two TFMs. -->
         <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT'">net471;net462</TargetFrameworks>
@@ -29,8 +29,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Serilog" Version="4.0.0"/>
-        <PackageReference Include="PolySharp" Version="1.14.1" PrivateAssets="all"/>
+        <PackageReference Include="Serilog" Version="4.0.0" />
+        <PackageReference Include="PolySharp" Version="1.14.1" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup Condition="$(TargetFrameworkIdentifier) != '.NETFramework'">
@@ -38,8 +38,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\..\assets\serilog-sink-nuget.png" Pack="true" Visible="false" PackagePath="/"/>
-        <None Include="..\..\README.md" Pack="true" Visible="false" PackagePath="/"/>
+        <None Include="..\..\assets\serilog-sink-nuget.png" Pack="true" Visible="false" PackagePath="/" />
+        <None Include="..\..\README.md" Pack="true" Visible="false" PackagePath="/" />
     </ItemGroup>
 
 </Project>
