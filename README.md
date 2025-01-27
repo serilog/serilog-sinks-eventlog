@@ -4,7 +4,8 @@
 
 A Serilog sink that writes events to the Windows Event Log.
 
-**Important:** version 3.0 of this sink changed the default value of `manageEventSource` from `true` to `false`. Applications that run with administrative privileges, and that can therefore create event sources on-the-fly, can opt in by providing `manageEventSource: true` as a configuration option.
+> [!IMPORTANT]
+> Version 3.0 of this sink changed the default value of `manageEventSource` from `true` to `false`. Applications that run with administrative privileges, and that can therefore create event sources on-the-fly, can opt in by providing `manageEventSource: true` as a  configuration option.
 
 ### Getting started
 
